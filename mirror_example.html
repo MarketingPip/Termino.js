@@ -1,0 +1,104 @@
+<style>
+  body {
+  background: rgb(189, 147, 249);
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+}
+
+.terminal-window {
+  text-align: left;
+  width: 600px;
+  height: 360px;
+  border-radius: 10px 10px 0 0;
+  position: relative;
+  box-shadow: 0 0 5px 1px rgb(40, 42, 54);
+  margin: 0 auto;
+}
+
+.terminal-header {
+  background: #e0e8f0;
+  height: 30px;
+  border-radius: 8px 8px 0 0;
+  padding-left: 10px;
+}
+
+.terminal-button {
+  width: 12px;
+  height: 12px;
+  margin: 10px 4px 0 0;
+  display: inline-block;
+  border-radius: 50%;
+}
+
+.green {
+  background: #3bb662;
+}
+
+.yellow {
+  background: #e5c30f;
+}
+
+.red {
+  background: #e75448;
+}
+
+.terminal-body {
+  color: white;
+  font-family: Menlo, Monaco, "Consolas", monospace, "Courier New", "Courier";
+  font-size: 11pt;
+  background: #30353a;
+  opacity: 0.9;
+  padding: 10px;
+  box-sizing: border-box;
+  position: absolute;
+  width: 100%;
+  top: 30px;
+  bottom: 0;
+  overflow: auto;
+}
+#hidden_termino_input{
+  opacity:0;
+}
+</style>
+
+<div id="terminal" class="terminal-window" onclick="mirrorTextToTermino()">
+  <div class="terminal-header">
+    <div class="terminal-button green"></div>
+    <div class="terminal-button yellow"></div>
+    <div class="terminal-button red"></div>
+  </div>
+  <div class="terminal-body">
+    <span class="termino-console"></span>
+    <span class="prompt" id="mirror">>   </span>
+    <input class="termino-input"  id="hidden_termino_input" type="text"></input>
+  </div>
+  
+</div>
+
+
+<script type="module">
+  import {Termino} from 'https://cdn.jsdelivr.net/gh/MarketingPipeline/Termino.js@v1.0.0/dist/termino.min.js';
+
+let term= Termino(document.getElementById("terminal"))
+term.echo("Hello world from https://github.com/MarketingPipeline")
+</script>
+<script>
+  let mirror = document.getElementById('mirror');
+  function mirrorTextToTermino(){
+ 
+  document.getElementById("hidden_termino_input").focus() // focus / click the text input
+    
+    
+// handle your events for your hidden input!
+    document.getElementById("hidden_termino_input").addEventListener('keydown', function(event) {
+  if (event.keyCode === 13){ // Clear the Text On Your Command Key! (should match your Termino Command Key)
+     mirror.innerText = `> ` 
+  } else{
+     mirror.innerText = `>  ${event.target.value}` // Mirror the text in your Termino!
+  }
+ 
+});
+  }
+</script>
+
