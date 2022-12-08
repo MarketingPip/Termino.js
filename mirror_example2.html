@@ -1,0 +1,183 @@
+<link href="https://fonts.googleapis.com/css?family=Inconsolata:400,700|VT323" rel="stylesheet">
+<style>
+  html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+body,
+pre {
+  font-family: "VT323", monospace;
+  color: white;
+  background: black;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 1.25em;
+}
+
+pre {
+  font-size: 1em;
+}
+
+a:link,
+a:visited {
+  color: white;
+}
+
+::selection {
+  background: #02852c;
+}
+
+::-moz-selection {
+  background: #02852c;
+}
+
+::-webkit-scrollbar {
+  width: 20px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #3c3c3c;
+  border-radius: 20px;
+  border: 6px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #5d5d5d;
+}
+.editor {
+  max-width: 60em;
+  margin: auto;
+}
+
+.top-bar {
+  position: fixed;
+  top: 0px;
+  background: white;
+  color: black;
+  text-align: center;
+  width: -webkit-fill-available;
+  max-width: 60em;
+}
+
+.shortcut {
+  background: white;
+  color: black;
+  max-width: fit-content;
+  display: inline;
+}
+
+.bottom-bar {
+  background: black;
+  bottom: 0px;
+  position: fixed;
+  max-width: 65em;
+}
+
+table {
+  width: 100%;
+  table-layout: fixed;
+}
+#hidden_termino_input {
+  opacity:0;
+}
+</style>
+       
+<div  id="terminal" class="editor" onclick="mirrorTextToTermino()">
+  <div class="top-bar">File: Termino.js Demo</div>
+
+  <pre class="termino-console">
+
+</pre>
+     <span class="prompt" id="mirror">>   </span>
+    <input class="termino-input"  id="hidden_termino_input" type="text"></input>
+  <br>
+  <br>
+
+  </pre>
+
+  <div class="bottom-bar">
+    <table>
+      <tr>
+        <td>
+          <div class="shortcut">^G</div> Get Help
+        </td>
+        <td>
+          <div class="shortcut">^O</div> Write Out
+        </td>
+        <td>
+          <div class="shortcut">^W</div> Where Is
+        </td>
+        <td>
+          <div class="shortcut">^K</div> Cut Text
+        </td>
+        <td>
+          <div class="shortcut">^J</div> Justify
+        </td>
+        <td>
+          <div class="shortcut">^C</div> Cur Pos
+        </td>
+        <td>
+          <div class="shortcut">M-U</div> Undo
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="shortcut">^X</div> Exit
+        </td>
+        <td>
+          <div class="shortcut">^R</div> Read File
+        </td>
+        <td>
+          <div class="shortcut">^\</div> Replace
+        </td>
+        <td>
+          <div class="shortcut">^U</div> Uncut Text
+        </td>
+        <td>
+          <div class="shortcut">^T</div> To Spell
+        </td>
+        <td>
+          <div class="shortcut">^_</div> Go To Line
+        </td>
+        <td>
+          <div class="shortcut">M-E</div> Redo
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<script type="module">
+  import {Termino} from 'https://cdn.jsdelivr.net/gh/MarketingPipeline/Termino.js@v1.0.0/dist/termino.min.js';
+
+ let term= Termino(document.getElementById("terminal"))
+        term.echo("Hello world from https://github.com/MarketingPipeline")
+</script>
+
+<script>
+  mirrorTextToTermino()
+    let mirror = document.getElementById('mirror');
+  function mirrorTextToTermino(){
+ 
+  document.getElementById("hidden_termino_input").focus() // focus / click the text input
+    
+    
+// handle your events for your hidden input!
+    document.getElementById("hidden_termino_input").addEventListener('keydown', function(event) {
+  if (event.keyCode === 13){ // Clear the Text On Your Command Key! (should match your Termino Command Key)
+     mirror.innerText = `> ` 
+  } else{
+     mirror.innerText = `>  ${event.target.value}` // Mirror the text in your Termino!
+  }
+ 
+});
+  }
+</script> 
