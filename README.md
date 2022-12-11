@@ -4,7 +4,7 @@
 
 **[User Showcase](https://github.com/MarketingPipeline/Termino.js/blob/gh-pages/showcase.md)** | **[Live Demo](https://marketingpipeline.github.io/Termino.js/demo)** | **[Getting Started](https://github.com/MarketingPipeline/Termino.js/wiki/Getting-Started)** | **[Documentation](https://github.com/MarketingPipeline/Termino.js/wiki)** | **[GitHub](https://github.com/MarketingPipeline/Termino.js/)**
 
-Termino.js is a highly customizable front-end component written in pure JavaScript that is great for making web based terminal animations, games & apps on any website including support for curses-based apps, custom functions on user commands, key-code & mouse events & much more!
+Termino.js is a highly customizable front-end component written in pure JavaScript that is great for making web-based terminal animations, games, and apps on any website. It supports curses-based apps, custom functions on user commands, key-code and mouse events, and much more.
 
 _ie:_ You can use this JavaScript library to create web based terminals on any website.
 
