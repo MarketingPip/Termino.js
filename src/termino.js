@@ -1,6 +1,6 @@
 /**!
  * @license Termino.js - A JavaScript library to make custom terminals in the browser with support for executing your own custom functions!
- * VERSION: 1.0.0
+ * VERSION: 1.0.1 (WIP) / Need to do some tests + add console connector etc... 
  * LICENSED UNDER MIT LICENSE
  * MORE INFO CAN BE FOUND AT https://github.com/MarketingPipeline/Termino.js/
  */
@@ -54,16 +54,33 @@ export function Termino(terminalSelector, keyCodes, settings) {
       disable_terminal_input: false // disable any user commands / inputs. --- Useful for making terminal animations etc! 
     }
 
+    if(!terminalSelector){
+       throw {
+          message: "No terminalSelector was provided"
+        }
+    }
+    
+    
     /// ALLOW DEVS TO PASS CUSTOM SETTINGS FOR TERMINAL
     if (settings) {
       // function to compare custom settings
-      function compare(a, b) {
-        return JSON.stringify(a) === JSON.stringify(b);
+      function compare(json1, json2) {
+        var keys1 = Object.keys(json1);
+  var keys2 = Object.keys(json2);
+  if (keys1.length != keys2.length) {
+    return false;
+  }
+  for (var i = 0; i < keys1.length; i++) {
+    if (keys1[i] != keys2[i]) {
+      return false;
+    }
+  }
+  return true;
       }
       // CUSTOM SETTINGS PASSED ARE NOT VALID
       if (compare(DEF_SETTINGS, settings) != true) {
         throw {
-          message: "Settings Error: Your overwritten Termino settings are not valid"
+          message: "Your overwritten Termino settings are not valid"
         }
       } else {
         // CUSTOM SETTINGS ARE VALID
@@ -71,10 +88,24 @@ export function Termino(terminalSelector, keyCodes, settings) {
       }
     }
 
-
+  
     let terminal_console = terminalSelector.querySelector(DEF_SETTINGS.terminal_output)
+   
+  let terminal_input = terminalSelector.querySelector(DEF_SETTINGS.terminal_input)  
+    
+    if(terminal_console == null){
+      throw {
+          message: `Could not find ${DEF_SETTINGS.terminal_output} on page used for terminal_output`
+        }
+    }
 
-
+       if(terminal_input == null){
+      throw {
+          message: `Could not find ${DEF_SETTINGS.terminal_input} on page used for terminal_input`
+        }
+    }
+    
+    
 
     /// DEFAULT TERMINAL KEY CODES  
     let KEYCODES = [{
@@ -90,32 +121,41 @@ export function Termino(terminalSelector, keyCodes, settings) {
 
 
     // DEFAULT SCROLL BTNS
+    
+    
+    /// UP ARROW
+    let Scroll_Up_Key = KEYCODES[0].key_code
 
     /// DOWN ARROW
-    let Scroll_Down_Key = KEYCODES.filter(x => x.id === "SCROLL_DOWN_KEY")[0].key_code
+    let Scroll_Down_Key = KEYCODES[1].key_code
 
-    /// UP ARROW
-    let Scroll_Up_Key = KEYCODES.filter(x => x.id === "SCROLL_UP_KEY")[0].key_code
-
+   
 
 
+    // EXAMPLE USAGE JSONLIST + "SCROLL_UP_KEY"
+    function isScrollKeySet(jsonList, id) {
+  for (var i = 0; i < jsonList.length; i++) {
+    if (jsonList[i].id == id && jsonList[i].key_code != undefined) {
+      return jsonList[i].key_code
+    }
+  }
+  return false;
+}
 
     /// ALLOW DEVS TO PASS CUSTOM KEYCODE FUNCTIONS FOR TERMINAL
 
     if (keyCodes) {
       // Check if scroll up key has been set
-      if (keyCodes.filter(x => x.id === "SCROLL_UP_KEY").length != 0) {
-        if (keyCodes.filter(x => x.id === "SCROLL_UP_KEY")[0].key_code != undefined) {
+      if (isScrollKeySet(keyCodes, "SCROLL_UP_KEY")){
           // set custom scroll up key
-          Scroll_Up_Key = keyCodes.filter(x => x.id === "SCROLL_UP_KEY")[0].key_code
-        }
+          Scroll_Up_Key = isScrollKeySet(keyCodes, "SCROLL_UP_KEY")
+        
       }
       // Check if scroll down key has been set
-      if (keyCodes.filter(x => x.id === "SCROLL_DOWN_KEY").length != 0) {
-        if (keyCodes.filter(x => x.id === "SCROLL_DOWN_KEY")[0].key_code != undefined) {
-          // set custom scroll down key
-          Scroll_Down_Key = keyCodes.filter(x => x.id === "SCROLL_DOWN_KEY")[0].key_code
-        }
+         if (isScrollKeySet(keyCodes, "SCROLL_DOWN_KEY")){
+          // set custom scroll up key
+          Scroll_Down_Key = isScrollKeySet(keyCodes, "SCROLL_DOWN_KEY")
+        
       }
       KEYCODES = keyCodes
     }
@@ -138,17 +178,14 @@ export function Termino(terminalSelector, keyCodes, settings) {
         checkIfCommand()
       }
 
-      /// SCROLL UP / DOWN TERMINAL FUNCTION
+      /// SCROLL UP / DOWN TERMINAL FUNCTION - WIP; REMOVE THIS ELSE IF JUNK FUNCTION...
       if (DEF_SETTINGS.allow_scroll === true) {
         if (e.keyCode == Scroll_Up_Key) {
           /// SCROLL TERMINAL UP
-          terminal_console.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-          });
+           scrollTerminalToTop()
         } else if (e.keyCode == Scroll_Down_Key) {
           /// SCROLL TERMINAL DOWN
-          terminal_console.scrollTop = terminal_console.scrollHeight;
+         scrollTerminalToBottom()
         }
       }
     });
@@ -277,6 +314,7 @@ export function Termino(terminalSelector, keyCodes, settings) {
 
 
 
+
     /// DISABLE INPUT IF DEFAULT SETTING IS SET TO TRUE  
     if (DEF_SETTINGS.disable_terminal_input === true) {
       terminalSelector.querySelector(DEF_SETTINGS.terminal_input).setAttribute("disabled", "");
@@ -285,6 +323,12 @@ export function Termino(terminalSelector, keyCodes, settings) {
 
     /// ADD ELEMENT TO TERMINAL BY ID, HTML & CLASS NAME
     function addElementWithID(id, html, class_name) {
+      try{
+      if(!id){
+        throw {
+          message: "No ID was provided when using add_element()"
+        }
+      }
       let g = null;
       g = document.createElement('div');
       if (class_name) {
@@ -295,6 +339,9 @@ export function Termino(terminalSelector, keyCodes, settings) {
         g.innerHTML = html
       }
       terminal_console.appendChild(g);
+      }catch(error){
+        throw(error.message)
+      }
     }
 
 
@@ -319,20 +366,21 @@ export function Termino(terminalSelector, keyCodes, settings) {
 
 
       /// RUN ANY FUNCTIONS FOR KEYCODES / KEYBIND SHORTCUTS / BUTTONS. 
-      if (KEYCODES.filter(x => x.key_code === key).length != 0) {
-        KEYCODES = KEYCODES.filter(x => x.key_code === key)
-        if (KEYCODES.length != 0) {
-          if (KEYCODES[0].function != undefined)
-            try {
-              await eval(KEYCODES[0].function)
-            } catch (error) {
-              throw {
-                message: `KeyCode Function Error: ${error.message}`
-              }
-            }
-        }
+       for (var i = 0; i < KEYCODES.length; i++) {
+    if (key === KEYCODES[i].key_code) {
+     
+      try {
+      if(KEYCODES[i].function){
+        KEYCODES[i].function()
       }
-
+      } catch (error) {
+        console.error(`Termino.js: KeyCode Function Error: ${error.message}`)
+        throw {
+                message: `Termino.js: KeyCode Function Error: ${error.message}`
+              }
+      }
+    }
+  }
 
 
       /// MAKE SURE USER IS NOT ANSWERING A QUESTION
@@ -387,3 +435,39 @@ export function Termino(terminalSelector, keyCodes, settings) {
 if (typeof document === 'undefined') {
   console.error("Termino.js is only supported for the browser")
 }
+
+function example(){
+  console.log("gdd")
+}
+
+/// CUSTOM TERMINAL KEY CODES  
+   let YOUR_CUSTOM_KEYCODES = [{
+     "id": "SCROLL_UP_KEY", /// CUSTOM SCROLL UP KEY - "SCROLL_UP_KEY" ID NAME IS REQUIRED. 
+     "key_code": 38,
+      "function":  example 
+   
+   }, {
+     "id": "SCROLL_DOWNl_KEY", // CUSTOM SCROLL DOWN KEY - "SCROLL_DOWN_KEY" ID NAME IS REQUIRED. 
+     "key_code": 8
+   },{
+     "id": "SCROLL_DOWN_KEY", // CUSTOM SCROLL DOWN KEY - "SCROLL_DOWN_KEY" ID NAME IS REQUIRED. 
+     "key_code": 34,
+   // "function": example() // you can add your own custom function to the scroll down button if needed! 
+   }];
+   
+
+let settings = {
+      allow_scroll: true, // allow scroll up & down on terminal 
+      prompt: ">lll ", // default prompt
+      command_key: 13, // default command key
+      terminal_killed_placeholder: "TERMINAL DISABLED", // default terminal input placeholder when killed. 
+      terminal_output: ".termino-console", // default output query selector
+      terminal_input: ".termino-inputtt", // default input query selector
+      disable_terminal_input: false // disable any user commands / inputs. --- Useful for making terminal animations etc! 
+    }
+   /// YOUR TERMINAL / TERMINO INSTANCE WITH CUSTOM KEYCODES
+try{
+    let term= Termino(document.getElementById("YOUR_TERMINAL"), YOUR_CUSTOM_KEYCODES, settings )
+   }catch(error){
+     console.log(error)
+   }
