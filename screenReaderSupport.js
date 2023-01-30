@@ -34,3 +34,24 @@ function screenReader() {
 }
 /* example usage of screenReader. */
 screenReader();
+
+
+
+
+
+
+/* function for screen reader support with error handling if support not detected in browser. */
+function screenReaderSupport() {
+  try {
+    var speechSynthesis = window.speechSynthesis;
+    var voices = speechSynthesis.getVoices();
+    var voice = voices[0];
+    var utterance = new SpeechSynthesisUtterance('Hello World');
+    utterance.voice = voice;
+    speechSynthesis.speak(utterance);
+  } catch (e) {
+    console.log('Screen reader support not detected in browser.');
+  }
+}
+/* example usage screenReaderSupport() */
+screenReaderSupport();
