@@ -23,3 +23,13 @@ function removeAll(str) {
   result = removeEmojis(result);
   return result;
 }
+
+
+/* function to remove all ascii from string. */
+function removeAscii(str) {
+  return str.replace(/[^\x00-\x7F]/g, "");
+}
+/* function to replace all ansi from string. */
+function removeAnsi(str) {
+  return str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
+}
