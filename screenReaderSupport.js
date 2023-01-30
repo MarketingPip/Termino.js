@@ -81,3 +81,23 @@ const allVoicesObtained = new Promise(function(resolve, reject) {
 allVoicesObtained.then(voices => console.log("All voices:", voices));
 
 ```
+
+
+
+
+
+/* function to set text to speech with language, voice, country etc. */
+function setTextToSpeech(text, lang, voice, country, gender, rate, pitch, volume) {
+  var msg = new SpeechSynthesisUtterance();
+  msg.text = text;
+  msg.lang = lang;
+  msg.voice = voice;
+  msg.voiceURI = 'native';
+  msg.volume = volume;
+  msg.rate = rate;
+  msg.pitch = pitch;
+  msg.onend = function(e) {
+    console.log('Finished in ' + event.elapsedTime + ' seconds.');
+  };
+  speechSynthesis.speak(msg);
+}
