@@ -64,7 +64,7 @@ screenReaderSupport();
 
 
 
-
+/// taken from https://stackoverflow.com/questions/21513706/getting-the-list-of-voices-in-speechsynthesis-web-speech-api
 ```
 const allVoicesObtained = new Promise(function(resolve, reject) {
   let voices = window.speechSynthesis.getVoices();
