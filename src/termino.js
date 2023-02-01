@@ -42,7 +42,32 @@ import 'https://polyfill.io/v3/polyfill.min.js?features=Array.prototype.filter,c
 
 export function Termino(terminalSelector, keyCodes, settings) {
 
+  
+  
   try {
+    
+    
+    // ALLOW DEVELOPERS TO CONNECT TO A NODE.JS PROCRESS 
+    function isCommandLine() {
+    return typeof process !== 'undefined' && process.stdout && process.stdin;
+    }
+    
+    
+    
+    
+    /// FUNCTION TO DELAY TERMINAL OUTPUTS / ECHO ETC (AWAIT / PROMISE BASED) - EXAMPLE : await term.delay(xxx) ...     
+    const termDelay = ms => new Promise(res => setTimeout(res, ms));
+
+    
+    // CHECK IF THIS TERMINO.JS APP IS RUNNING A WEB BASED TERMINAL OR A NODE.JS TERMINAL 
+     /* What does this do? 
+     ** Termino.js allows functions created for your web based terminal with termino.js to be used in a node.js CLI app!
+     */ 
+    if(!isCommandLine()){
+    
+    /// WEB BROWSER BASED TERMINO.JS
+    
+    
     // DEFAULT TERMINAL SETTINGS   
     let DEF_SETTINGS = {
       allow_scroll: true, // allow scroll up & down on terminal 
@@ -408,7 +433,7 @@ export function Termino(terminalSelector, keyCodes, settings) {
 
       }
 
-    } /// DEFAULT TERMINO FUNCTIONS FOR DEVELOPER USAGE
+        } /// DEFAULT TERMINO FUNCTIONS FOR DEVELOPER USAGE - These can only be used for a (WEB BASED TERMINAL)
     return {
       echo: termEcho, // ECHO MESSAGE TO TERM WITH CAROT
       output: termOutput, // ECHO MESSAGE TO TERM WITHOUT CAROT
@@ -422,7 +447,54 @@ export function Termino(terminalSelector, keyCodes, settings) {
       add_element: addElementWithID, // ADD HTML ELEMENT WITH ID TO TERMINAL,
       remove_element: removeElementWithID, // REMOVE HTML ELEMENT WITH ID TO TERMINAL,
       kill: termKill // KILL THE TERMIMAL - IE.. SET INPUT TO DISABLED & CLEAR THE TERMINAL.
-    };
+    }} else{
+      /// THIS IS THE COMMAND-LINE CONNECTOR FOR NODE.JS
+      // ie; WRITE YOUR TERMINO.JS APP IN BROWSER & BE ABLE TO USE THEM IN NODE.JS VIA A TERMINAL TOO!
+      
+      
+      // DEFAULT FUNCTION TO ECHO TO TERMINAL (WITH PROMPT)
+      function termEcho(value){
+        process.stdout.write(`${DEF_SETTINGS.prompt}${value}` + '\n');
+      }
+      
+      
+        // DEFAULT FUNCTION TO ECHO TO TERMINAL (WITHOUT PROMPT)
+       function termOutput(value){
+        process.stdout.write(`${value}` + '\n');
+      }
+      
+      
+       /// DEFAULT FUNCTION TO KILL / EXIT TERMINAL
+      function termKill(){
+        process.exit();
+      }
+      
+      
+       // FUNCTION TO ASK QUESTION VIA TERMINAL
+      function termInput(question) {
+       return new Promise(function(resolve, reject) {
+       process.stdin.resume();
+       process.stdout.write(question);
+       process.stdin.once('data', function(data) {
+              // echo value to terminal 
+             // termOutput(data.toString().trim()) // DISABLED as of now looks weird... 
+             
+             // resolve that promise!
+              resolve(data.toString().trim());
+        });
+       });
+      } 
+      
+      /// DEFAULT TERMINO FUNCTIONS FOR DEVELOPER USAGE -  These can only be used for a (NODE.JS TERMINAL APP)
+      return { 
+      echo: termEcho, // ECHO MESSAGE TO TERM WITH CAROT
+      output: termOutput, // ECHO MESSAGE TO TERM WITHOUT CAROT
+      delay: termDelay, // DELAY FUNCTION BY X VALUE OF SECONDS
+      input: termInput, // ASK USER QUESTION & RETURN VALUE
+      kill: termKill // KILL / EXIT THE TERMIMAL APP.
+    }
+      
+    }
   } catch (error) {
     // Something went wrong! 
     console.error(`Termino.js Error: ${error.message}`)
@@ -431,43 +503,3 @@ export function Termino(terminalSelector, keyCodes, settings) {
     }
   }
 }
-
-if (typeof document === 'undefined') {
-  console.error("Termino.js is only supported for the browser")
-}
-
-function example(){
-  console.log("gdd")
-}
-
-/// CUSTOM TERMINAL KEY CODES  
-   let YOUR_CUSTOM_KEYCODES = [{
-     "id": "SCROLL_UP_KEY", /// CUSTOM SCROLL UP KEY - "SCROLL_UP_KEY" ID NAME IS REQUIRED. 
-     "key_code": 38,
-      "function":  example 
-   
-   }, {
-     "id": "SCROLL_DOWNl_KEY", // CUSTOM SCROLL DOWN KEY - "SCROLL_DOWN_KEY" ID NAME IS REQUIRED. 
-     "key_code": 8
-   },{
-     "id": "SCROLL_DOWN_KEY", // CUSTOM SCROLL DOWN KEY - "SCROLL_DOWN_KEY" ID NAME IS REQUIRED. 
-     "key_code": 34,
-   // "function": example() // you can add your own custom function to the scroll down button if needed! 
-   }];
-   
-
-let settings = {
-      allow_scroll: true, // allow scroll up & down on terminal 
-      prompt: ">lll ", // default prompt
-      command_key: 13, // default command key
-      terminal_killed_placeholder: "TERMINAL DISABLED", // default terminal input placeholder when killed. 
-      terminal_output: ".termino-console", // default output query selector
-      terminal_input: ".termino-inputtt", // default input query selector
-      disable_terminal_input: false // disable any user commands / inputs. --- Useful for making terminal animations etc! 
-    }
-   /// YOUR TERMINAL / TERMINO INSTANCE WITH CUSTOM KEYCODES
-try{
-    let term= Termino(document.getElementById("YOUR_TERMINAL"), YOUR_CUSTOM_KEYCODES, settings )
-   }catch(error){
-     console.log(error)
-   }
