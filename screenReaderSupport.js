@@ -101,3 +101,19 @@ function setTextToSpeech(text, lang, voice, country, gender, rate, pitch, volume
   };
   speechSynthesis.speak(msg);
 }
+
+
+/* function for speech to text, await till speech is finished */
+function speechToText(text) {
+  return new Promise(function(resolve, reject) {
+    var msg = new SpeechSynthesisUtterance(text);
+    msg.onend = function(e) {
+      resolve();
+    };
+    window.speechSynthesis.speak(msg);
+  });
+}
+/* example of usage */
+speechToText('Hello World').then(function() {
+  console.log('done');
+});
