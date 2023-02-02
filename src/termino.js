@@ -97,7 +97,7 @@ export function Termino(terminalSelector, keyCodes, settings) {
       terminal_output: ".termino-console", // default output query selector
       terminal_input: ".termino-input", // default input query selector
       disable_terminal_input: false, // disable any user commands / inputs. --- Useful for making terminal animations etc!
-      // speech_to_text:false, // Enable text to speech on output & inputs.
+      speech_to_text:true, // Enable text to speech on output & inputs.
     }
     
     
@@ -272,7 +272,12 @@ async function SpeechToText(command){
   
 if(DEF_SETTINGS.speech_to_text == true){
   
-   
+     var speechSynthesis = window.speechSynthesis;
+    var voices = speechSynthesis.getVoices();
+    var voice = voices[0];
+    var utterance = new SpeechSynthesisUtterance(command);
+    utterance.voice = voice;
+    speechSynthesis.speak(utterance);
 
    // REMOVE ALL ILLEGAL CHARACTERS
   //  command =  command.replace(/[^a-zA-Z0-9\s]/g, '')
@@ -578,3 +583,34 @@ if(DEF_SETTINGS.speech_to_text == true){
     }
   }
 }
+
+
+
+
+
+ let DEF_SETTINGS = {
+      allow_scroll: true, // allow scroll up & down on terminal 
+      prompt: "<pre> > {{command}} </pre>", // default prompt / echo message -  {{command}} is required
+      input: "<pre> a {{command}} </pre>", // input message - {{command}} is required
+      output: "<pre> {{command}} </pre>", // output message - {{command}} is required
+      command_key: 13, // default command key
+      terminal_killed_placeholder: "TERMINAL DISABLED", // default terminal input placeholder when killed. 
+      terminal_output: ".termino-console", // default output query selector
+      terminal_input: ".termino-inputs", // default input query selector
+      disable_terminal_input: false, // disable any user commands / inputs. --- Useful for making terminal animations etc!
+      speech_to_text:true, // Enable text to speech on output & inputs.
+    }
+ 
+async function bb(){
+let term= Termino(document.getElementById("terminal"), null, DEF_SETTINGS)
+ let t = await term.input("Hello world from $$$ https://github.com/MarketingPipeline")
+term.output(t)
+
+   let t = await term.input("What would you like to do")
+term.output(t)
+  
+ let t = await term.input("1 2 3 4 5 6 ! @ # $ % ^ & * ( ) ::: :)")
+term.output(t)  
+  
+}
+bb()
