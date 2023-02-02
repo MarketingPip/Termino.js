@@ -2,13 +2,20 @@
 
 All notable changes to Termino.js will be documented in this file.
 
+## [1.0.1] - (Dec 6, 2022)
+
+This version brings major improvements added to Termino.js, including some bug-fixes / fixes for some poor code. 
+
+### Added 
+- Command Line Connector (You can now execute your Termino.js apps on a computer too!)
+- Features to customize input, output & echo messages! 
+- Fixes for some un-working code. 
+
+
+
 ## [1.0.0] - (Dec 6, 2022)
 
-Initial Release.
-
-### Added
-
-- What was added.
+Initial release of Termino.js. 
 
 
 <!--
