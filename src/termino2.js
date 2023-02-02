@@ -606,10 +606,10 @@ let term= Termino(document.getElementById("terminal"), null, DEF_SETTINGS)
  let t = await term.input("Hello world from $$$ https://github.com/MarketingPipeline")
 term.output(t)
 
-   let t = await term.input("What would you like to do")
+ t = await term.input("What would you like to do")
 term.output(t)
   
- let t = await term.input("1 2 3 4 5 6 ! @ # $ % ^ & * ( ) ::: :)")
+t = await term.input("1 2 3 4 5 6 ! @ # $ % ^ & * ( ) ::: :)")
 term.output(t)  
   
 }
