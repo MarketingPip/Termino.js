@@ -325,7 +325,7 @@ function disableTextToSpeech(){
         scrollTerminalToBottom()
         
         // speak question - if enabled.          
-        SpeechToText(question)
+        SpeechToText(`${DEF_SETTINGS.input.replace('{{command}}', question)}`)
         
         InputState = true;
 
@@ -611,7 +611,7 @@ function disableTextToSpeech(){
  let DEF_SETTINGS = {
       allow_scroll: true, // allow scroll up & down on terminal 
       prompt: "<pre> > {{command}} </pre>", // default prompt / echo message -  {{command}} is required
-      input: "<pre> a {{command}} </pre>", // input message - {{command}} is required
+      input: "<pre> {{command}} </pre>", // input message - {{command}} is required
       output: "<pre> {{command}} </pre>", // output message - {{command}} is required
       command_key: 13, // default command key
       terminal_killed_placeholder: "TERMINAL DISABLED", // default terminal input placeholder when killed. 
