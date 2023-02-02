@@ -265,6 +265,33 @@ export function Termino (terminalSelector, keyCodes, settings) {
       
 let textToSpeechVoice = null;      
       
+function detectSpeechSupport() {
+  return new Promise(function(resolve, reject) {
+    if ('speechSynthesis' in window) {
+      resolve();
+    } else {
+      reject();
+    }
+  });
+}
+  
+      
+
+let SpeechDetectionTestRan = false
+      
+if(DEF_SETTINGS.speech_to_text == true){
+
+if(SpeechDetectionTestRan != true){  
+  detectSpeechSupport().then(function() {
+   DEF_SETTINGS.speech_to_text = true
+  }).catch(function() {
+   DEF_SETTINGS.speech_to_text = false
+ }); 
+  SpeechDetectionTestRan = true
+ }
+  
+}  
+      
 async function SpeechToText(command){
   // WIP FOR NEXT VERSION... :D 
   
