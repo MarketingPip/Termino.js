@@ -272,11 +272,8 @@ async function SpeechToText(command){
   
 if(DEF_SETTINGS.speech_to_text == true){
   
-     var speechSynthesis = window.speechSynthesis;
-    var voices = speechSynthesis.getVoices();
-    var voice = voices[0];
-    var utterance = new SpeechSynthesisUtterance(command);
-    utterance.voice = voice;
+    let speechSynthesis = window.speechSynthesis;
+    let utterance = new SpeechSynthesisUtterance(command);
     speechSynthesis.speak(utterance);
 
    // REMOVE ALL ILLEGAL CHARACTERS
