@@ -38,8 +38,23 @@
 */
 
 // POLYFILL SUPPORT (AUTO-DETECTED ON LOAD FOR DEVICE)
-import 'https://polyfill.io/v3/polyfill.min.js?features=Array.prototype.filter,console,document,JSON,Promise'
+if (typeof document != 'undefined') {
+  const PolyFillURL = `https://polyfill.io/v3/polyfill.min.js?features=Array.prototype.filter,console,document,JSON,Promise`
+  
+   // Make sure not in the document already for some reason
+  if (!document.querySelector(`script[src="${PolyFillURL}"]`)) {
+       (async function() {
+await (PolyFillURL);
+})();
+    
+}
+  
 
+}
+
+
+
+  
 export function Termino(terminalSelector, keyCodes, settings) {
 
   
@@ -59,34 +74,35 @@ export function Termino(terminalSelector, keyCodes, settings) {
     const termDelay = ms => new Promise(res => setTimeout(res, ms));
 
     
-    // CHECK IF THIS TERMINO.JS APP IS RUNNING A WEB BASED TERMINAL OR A NODE.JS TERMINAL 
-     /* What does this do? 
-     ** Termino.js allows functions created for your web based terminal with termino.js to be used in a node.js CLI app!
-     */ 
-    if(!isCommandLine()){
     
-    /// WEB BROWSER BASED TERMINO.JS
+    /// FUNCTION TO REMOVE HTML FOR COMMAND LINE CONNECTOR
+    function removeHTML(command){
+          // REMOVES HTML
+    let HTML_Regex = /(<([^>]+)>)/ig;
+    command = command.replace(HTML_Regex, "");
+    return command
+    }
+       
     
     
-    // DEFAULT TERMINAL SETTINGS   
+     
+    // DEFAULT TERMINAL SETTINGS (USED FOR BROWSER & COMMAND LINE)  
     let DEF_SETTINGS = {
       allow_scroll: true, // allow scroll up & down on terminal 
-      prompt: "> ", // default prompt
+      prompt: "<pre> > {{command}} </pre>", // default prompt / echo message -  {{command}} is required
+      input: "<pre> {{command}} </pre>", // input message - {{command}} is required
+      output: "<pre> {{command}} </pre>", // output message - {{command}} is required
       command_key: 13, // default command key
       terminal_killed_placeholder: "TERMINAL DISABLED", // default terminal input placeholder when killed. 
       terminal_output: ".termino-console", // default output query selector
       terminal_input: ".termino-input", // default input query selector
-      disable_terminal_input: false // disable any user commands / inputs. --- Useful for making terminal animations etc! 
-    }
-
-    if(!terminalSelector){
-       throw {
-          message: "No terminalSelector was provided"
-        }
+      disable_terminal_input: false, // disable any user commands / inputs. --- Useful for making terminal animations etc!
+      speech_to_text:false, // Enable text to speech on output & inputs.
     }
     
     
-    /// ALLOW DEVS TO PASS CUSTOM SETTINGS FOR TERMINAL
+    
+        /// ALLOW DEVS TO PASS CUSTOM SETTINGS FOR TERMINAL
     if (settings) {
       // function to compare custom settings
       function compare(json1, json2) {
@@ -95,7 +111,15 @@ export function Termino(terminalSelector, keyCodes, settings) {
   if (keys1.length != keys2.length) {
     return false;
   }
+   
+   if (!json2.prompt.includes('{{command}}') || !json2.input.includes('{{command}}') || !json2.output.includes('{{command}}')) {
+     return false
+    }   
+        
   for (var i = 0; i < keys1.length; i++) {
+    
+   
+    
     if (keys1[i] != keys2[i]) {
       return false;
     }
@@ -112,6 +136,29 @@ export function Termino(terminalSelector, keyCodes, settings) {
         DEF_SETTINGS = settings
       }
     }
+    
+    
+    
+        
+    // CHECK IF THIS TERMINO.JS APP IS RUNNING A WEB BASED TERMINAL OR A NODE.JS TERMINAL 
+     /* What does this do? 
+     ** Termino.js allows functions created for your web based terminal with termino.js to be used in a node.js CLI app!
+     */ 
+    
+    if(!isCommandLine()){
+    
+    /// WEB BROWSER BASED TERMINO.JS
+    
+   
+
+    if(!terminalSelector){
+       throw {
+          message: "No terminalSelector was provided"
+        }
+    }
+    
+    
+
 
   
     let terminal_console = terminalSelector.querySelector(DEF_SETTINGS.terminal_output)
@@ -215,8 +262,25 @@ export function Termino(terminalSelector, keyCodes, settings) {
       }
     });
 
+async function SpeechToText(command){
+  // WIP FOR NEXT VERSION... :D 
+  
+if(DEF_SETTINGS.speech_to_text == true){
+  
+   
 
+   // REMOVE ALL ILLEGAL CHARACTERS
+  //  command =  command.replace(/[^a-zA-Z0-9\s]/g, '')
+  
+  
+    // REMOVES ALL ILLEGAL CHARACTERS - EXCLUDING HREFS..
+   // var illegalChars = /[^a-zA-Z0-9\s\:\/\.]/g;
+   // command = command.replace(illegalChars, '');
 
+    //console.log(command.trim())
+    // SPEAKTEXT(COMMAND)
+}
+}  
 
     // TERMINAL INPUT STATE / TERMINAL PROMPT FUNCTION  
     let InputState = false;
@@ -225,8 +289,10 @@ export function Termino(terminalSelector, keyCodes, settings) {
       return new Promise(function(resolve) {
 
         /// add the question value to terminal
-        terminal_console.innerHTML += question
+        termOutput(question)
 
+        // speak question - if enabled.          
+        SpeechToText(question)
 
         termClearValue()
 
@@ -269,15 +335,19 @@ export function Termino(terminalSelector, keyCodes, settings) {
 
     // FUNCTION TO OUTPUT TO TERMINAL (WITH TERMINAL PROMPT)
     function termEcho(command) {
-      terminal_console.innerHTML += `<pre>${DEF_SETTINGS.prompt} ${command}</pre>`
+      
+       
+      
+      terminal_console.innerHTML += `${DEF_SETTINGS.prompt.replace('{{command}}', command)}`
       scrollTerminalToBottom()
     }
 
 
     // FUNCTION TO OUTPUT TO TERMINAL (WITHOUT TERMINAL PROMPT)
     function termOutput(command) {
-      terminal_console.innerHTML += `<pre>${command}</pre>`
+      terminal_console.innerHTML += `${DEF_SETTINGS.output.replace('{{command}}', command)}`
       scrollTerminalToBottom()
+      SpeechToText(`${DEF_SETTINGS.output.replace('{{command}}', command)}`)
     }
 
 
@@ -448,19 +518,18 @@ export function Termino(terminalSelector, keyCodes, settings) {
       remove_element: removeElementWithID, // REMOVE HTML ELEMENT WITH ID TO TERMINAL,
       kill: termKill // KILL THE TERMIMAL - IE.. SET INPUT TO DISABLED & CLEAR THE TERMINAL.
     }} else{
-      /// THIS IS THE COMMAND-LINE CONNECTOR FOR NODE.JS
+    /// THIS IS THE COMMAND-LINE CONNECTOR FOR TERMINO.JS APP - EXECUTED VIA COMMAND LINE - IE NODE.JS ETC..  
       // ie; WRITE YOUR TERMINO.JS APP IN BROWSER & BE ABLE TO USE THEM IN NODE.JS VIA A TERMINAL TOO!
       
       
       // DEFAULT FUNCTION TO ECHO TO TERMINAL (WITH PROMPT)
-      function termEcho(value){
-        process.stdout.write(`${DEF_SETTINGS.prompt}${value}` + '\n');
+      function termEcho(value){        process.stdout.write(removeHTML(`${DEF_SETTINGS.prompt}`).replace('{{command}}',value) + '\n');
       }
       
       
         // DEFAULT FUNCTION TO ECHO TO TERMINAL (WITHOUT PROMPT)
        function termOutput(value){
-        process.stdout.write(`${value}` + '\n');
+        process.stdout.write(removeHTML(`${DEF_SETTINGS.output}`).replace('{{command}}',value) + '\n');
       }
       
       
@@ -473,8 +542,7 @@ export function Termino(terminalSelector, keyCodes, settings) {
        // FUNCTION TO ASK QUESTION VIA TERMINAL
       function termInput(question) {
        return new Promise(function(resolve, reject) {
-       process.stdin.resume();
-       process.stdout.write(question);
+       process.stdin.resume();       process.stdout.write(removeHTML(`${DEF_SETTINGS.input}`).replace('{{command}}',question));
        process.stdin.once('data', function(data) {
               // echo value to terminal 
              // termOutput(data.toString().trim()) // DISABLED as of now looks weird... 
@@ -485,7 +553,7 @@ export function Termino(terminalSelector, keyCodes, settings) {
        });
       } 
       
-      /// DEFAULT TERMINO FUNCTIONS FOR DEVELOPER USAGE -  These can only be used for a (NODE.JS TERMINAL APP)
+      /// DEFAULT TERMINO FUNCTIONS FOR DEVELOPER USAGE -  These can only be used for a (NODE.JS TERMINAL APP etc)
       return { 
       echo: termEcho, // ECHO MESSAGE TO TERM WITH CAROT
       output: termOutput, // ECHO MESSAGE TO TERM WITHOUT CAROT
