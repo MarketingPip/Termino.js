@@ -267,17 +267,25 @@ export function Termino(terminalSelector, keyCodes, settings) {
       }
     });
 
+      
+      
+      
 async function SpeechToText(command){
   // WIP FOR NEXT VERSION... :D 
   
 if(DEF_SETTINGS.speech_to_text == true){
-  
+   
+    try{
     command = removeHTML(command.trim())
     command = command.trim()
     let speechSynthesis = window.speechSynthesis;
     let utterance = new SpeechSynthesisUtterance(command);
     speechSynthesis.speak(utterance);
-
+    } catch(error){
+     console.error(error)
+     disableTextToSpeech() // DISABLE TEXT TO SPEECH TO PREVENT LOOP. 
+     throw error
+    }
    // REMOVE ALL ILLEGAL CHARACTERS
   //  command =  command.replace(/[^a-zA-Z0-9\s]/g, '')
   
@@ -288,9 +296,21 @@ if(DEF_SETTINGS.speech_to_text == true){
 
     //console.log(command.trim())
     // SPEAKTEXT(COMMAND)
-}
+   }
 }  
 
+  
+ // FUNCTION TO TURN TEXT TO SPEECH ON     
+function enableTextToSpeech(){
+  DEF_SETTINGS.speech_to_text = true
+}
+      
+ // FUNCTION TO TURN TEXT TO SPEECH OFF          
+function disableTextToSpeech(){
+  DEF_SETTINGS.speech_to_text = false
+}      
+      
+      
     // TERMINAL INPUT STATE / TERMINAL PROMPT FUNCTION  
     let InputState = false;
 
@@ -553,7 +573,8 @@ if(DEF_SETTINGS.speech_to_text == true){
        // FUNCTION TO ASK QUESTION VIA TERMINAL
       function termInput(question) {
        return new Promise(function(resolve, reject) {
-       process.stdin.resume();       process.stdout.write(removeHTML(`${DEF_SETTINGS.input}`).replace('{{command}}',question));
+       process.stdin.resume();       
+       process.stdout.write(removeHTML(`${DEF_SETTINGS.input}`).replace('{{command}}',question));
        process.stdin.once('data', function(data) {
               // echo value to terminal 
              // termOutput(data.toString().trim()) // DISABLED as of now looks weird... 
