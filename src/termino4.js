@@ -272,6 +272,8 @@ async function SpeechToText(command){
   
 if(DEF_SETTINGS.speech_to_text == true){
   
+    command = removeHTML(command.trim())
+    command = command.trim()
     let speechSynthesis = window.speechSynthesis;
     let utterance = new SpeechSynthesisUtterance(command);
     speechSynthesis.speak(utterance);
