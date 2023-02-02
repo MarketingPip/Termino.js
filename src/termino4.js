@@ -150,7 +150,7 @@ export function Termino(terminalSelector, keyCodes, settings) {
     
     if(!isCommandLine()){
     
-    /// WEB BROWSER BASED TERMINO.JS
+    /// WEB BROWSER BASED - TERMINO.JS
     
    
 
@@ -211,13 +211,13 @@ export function Termino(terminalSelector, keyCodes, settings) {
 
     // EXAMPLE USAGE JSONLIST + "SCROLL_UP_KEY"
     function isScrollKeySet(jsonList, id) {
-  for (var i = 0; i < jsonList.length; i++) {
-    if (jsonList[i].id == id && jsonList[i].key_code != undefined) {
-      return jsonList[i].key_code
-    }
-  }
-  return false;
-}
+        for (var i = 0; i < jsonList.length; i++) {
+          if (jsonList[i].id == id && jsonList[i].key_code != undefined) {
+            return jsonList[i].key_code
+            }
+         }
+      return false;
+     }
 
     /// ALLOW DEVS TO PASS CUSTOM KEYCODE FUNCTIONS FOR TERMINAL
 
@@ -268,7 +268,7 @@ export function Termino(terminalSelector, keyCodes, settings) {
     });
 
       
-      
+let textToSpeechVoice = null;      
       
 async function SpeechToText(command){
   // WIP FOR NEXT VERSION... :D 
@@ -278,9 +278,16 @@ if(DEF_SETTINGS.speech_to_text == true){
     try{
     command = removeHTML(command.trim())
     command = command.trim()
+    if(textToSpeechVoice == null){
+      /// USE DEVICE TEXT TO SPEECH VOICE 
     let speechSynthesis = window.speechSynthesis;
     let utterance = new SpeechSynthesisUtterance(command);
     speechSynthesis.speak(utterance);
+    } else{
+     // USE THE SET TEXT TO SPEECH VOICE.
+      
+      
+    } 
     } catch(error){
      console.error(error)
      disableTextToSpeech() // DISABLE TEXT TO SPEECH TO PREVENT LOOP. 
@@ -299,6 +306,19 @@ if(DEF_SETTINGS.speech_to_text == true){
    }
 }  
 
+  function setTextToSpeechVoice(voice) {
+  if (voice) {
+    var voices = window.speechSynthesis.getVoices();
+    for (var i = 0; i < voices.length; i++) {
+      if (voices[i].name == voice) {
+        textToSpeechVoice = voices[i];
+        return textToSpeechVoice
+      }
+    }
+  }
+  return null;
+}    
+      
   
  // FUNCTION TO TURN TEXT TO SPEECH ON     
 function enableTextToSpeech(){
