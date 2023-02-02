@@ -44,19 +44,14 @@
 // POLYFILL SUPPORT (AUTO-DETECTED ON LOAD FOR DEVICE)
 if (typeof document != 'undefined') {
   const PolyFillURL = `https://polyfill.io/v3/polyfill.min.js?features=Array.prototype.filter,console,document,JSON,Promise`
-   // Make sure not in the document already for some reason
-  if (!document.querySelector(`script[src="${PolyFillURL}"]`)) {
-       (async function() {
-         await (PolyFillURL);
-       })();
-   }
+  (async function() {
+    await (PolyFillURL);
+  })();
 }
 
 
 
-var module = {};
-module.exports = {};
-module.exports.Termino = function (terminalSelector, keyCodes, settings) {
+export function Termino (terminalSelector, keyCodes, settings) {
 
   
   
