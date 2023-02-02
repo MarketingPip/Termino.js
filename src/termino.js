@@ -294,15 +294,15 @@ if(DEF_SETTINGS.speech_to_text == true){
       return new Promise(function(resolve) {
 
         /// add the question value to terminal
-        termOutput(question)
-
-        // speak question - if enabled.          
-        SpeechToText(question)
+        terminal_console.innerHTML += `${DEF_SETTINGS.input.replace('{{command}}', question)}`
 
         termClearValue()
 
         scrollTerminalToBottom()
-
+        
+        // speak question - if enabled.          
+        SpeechToText(question)
+        
         InputState = true;
 
         function handleCommandForQuestion(event) {
