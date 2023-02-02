@@ -43,9 +43,8 @@
 
 // POLYFILL SUPPORT (AUTO-DETECTED ON LOAD FOR DEVICE)
 if (typeof document != 'undefined') {
-  const PolyFillURL = `https://polyfill.io/v3/polyfill.min.js?features=Array.prototype.filter,console,document,JSON,Promise`
   (async function() {
-    await (PolyFillURL);
+    await import('https://cdn.jsdelivr.net/gh/MarketingPipeline/Termino.js@v1.0.0/dist/termino.min.js') ;
   })();
 }
 
