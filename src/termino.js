@@ -12,44 +12,44 @@
 - NEED TO IMPROVE / WRITE DOCUMENTATION FOR LIBRARY - URGENT TASK NEEDS HELP BIG TIME!
   - CREATE DOCUMENATION WEBSITE HOSTED VIA GITHUB PAGES BRANCH
   - REMOVE WIKI FROM REPO.
-- NEED TO IMPROVE USAGE OF LOOPING INPUTS / ASKING USER FOR INPUTS CONSTANTLY...? (ANY SUGGESTIONS APPRECIATED)  
+  
 - SUPPORT FOR MULTIPLE KEYBINDS / KEYBOARD SHORT CUTS (VIA MOUSETRAP ON NPM / GITHUB)
-- POSSIBILY MAKE PLUGINS / FUNCTIONS THAT CAN BE SHARED.
-  - CREATE TEMPLATE TO USE PLUGIN / CREATE PLUGINS 
+-  MAKE SOME COOL PLUGINS. 
   - PLUGIN FOR CREATING TERMINAL ANIMATIONS VIA A TYPEWRITER / TYPING LIBRARY ETC.. 
-  - PLUGIN FOR PLAYING PRE-RECORDED TERMINAL ANIMATIONS. 
-- IMPROVE ERROR HANDLING (CHECK IF PASSED PROPER ARGUMENTS - CHECK IF VARIABLE IS ARRAY TYPE / JSON TYPE ETC...)
-- CODE CLEANING - USE CONST INSTEAD OF LET VARIABLES WHEN CAN.
-  - CLEAN / IMPROVE FILTER FUNCTION. 
-- REMOVE EVENT HANDLERS WHEN TERMINAL INSTANCE IS KILLED. 
+  - PLUGIN FOR PLAYING PRE-RECORDED TERMINAL ANIMATIONS.
+  - ORGANIZE PLUGINS IN REPO / WEBSITE ETC..
+  
 - MAKE THIS A EXPORT THIS AS WELL & GLOBAL IN SAME SCRIPT....? (DISCUSSION) 
-- INTERATION OBERSERVER FOR ANIMATIONS / POSSIBLY ALL INSTANCES. 
-- DOM OBSERVER (FOR NEW TERMINALS IN DOM) 
+
 - ADD ANY POLYFILL SUPPORTS NEEDED / UNTHOUGHT OF. 
+
 - CREATE TESTS + ACTION / WORKFLOW
   - BROWSER AUTOMATION TESTS VIA PUPPETEER ETC (CHECK ALL DEVICES / BROWSER COMPABILITY + POSSIBLY SCREENSHOTS). 
   - OTHER TESTS. 
   - CREATE ACTION THAT AUTO TESTS ON PR.
   - IF ANYONE COULD HELP WRITING TESTS / THESE WOULD BE APPRECIATED. 
-- LOTS OF OTHER IMPROVEMENTS THAT CAN BE MADE THO THIS. IF YOU ARE WILLING TO IMPROVE IT. FEEL FREE! :)
-
-
-
+  
+- Text To Speech Functions (WIP)
+  - Auto remove HTML / illegal characters? Or up to developers to do this?
+  
+- Improvements on Command Line Connector (Need feedback from devs for ways to improve)
+  - Auto remove HTML / illegal characters? Or up to developers to do this?
+  
 */
+
+
+
+
 
 // POLYFILL SUPPORT (AUTO-DETECTED ON LOAD FOR DEVICE)
 if (typeof document != 'undefined') {
   const PolyFillURL = `https://polyfill.io/v3/polyfill.min.js?features=Array.prototype.filter,console,document,JSON,Promise`
-  
    // Make sure not in the document already for some reason
   if (!document.querySelector(`script[src="${PolyFillURL}"]`)) {
        (async function() {
-await (PolyFillURL);
-})();
-    
-}
-  
-
+         await (PolyFillURL);
+       })();
+   }
 }
 
 
@@ -77,7 +77,7 @@ export function Termino(terminalSelector, keyCodes, settings) {
     
     /// FUNCTION TO REMOVE HTML FOR COMMAND LINE CONNECTOR
     function removeHTML(command){
-          // REMOVES HTML
+          // REMOVES ALL HTML ELEMENTS
     let HTML_Regex = /(<([^>]+)>)/ig;
     command = command.replace(HTML_Regex, "");
     return command
@@ -97,12 +97,12 @@ export function Termino(terminalSelector, keyCodes, settings) {
       terminal_output: ".termino-console", // default output query selector
       terminal_input: ".termino-input", // default input query selector
       disable_terminal_input: false, // disable any user commands / inputs. --- Useful for making terminal animations etc!
-      speech_to_text:false, // Enable text to speech on output & inputs.
+      // speech_to_text:false, // Enable text to speech on output & inputs.
     }
     
     
     
-        /// ALLOW DEVS TO PASS CUSTOM SETTINGS FOR TERMINAL
+    /// ALLOW DEVS TO PASS CUSTOM SETTINGS FOR TERMINAL
     if (settings) {
       // function to compare custom settings
       function compare(json1, json2) {
@@ -113,6 +113,9 @@ export function Termino(terminalSelector, keyCodes, settings) {
   }
    
    if (!json2.prompt.includes('{{command}}') || !json2.input.includes('{{command}}') || !json2.output.includes('{{command}}')) {
+     throw {
+           message: "Your overwritten Termino settings are not valid, {{command}} is required inside prompt, input & output."
+           }
      return false
     }   
         
@@ -163,8 +166,10 @@ export function Termino(terminalSelector, keyCodes, settings) {
   
     let terminal_console = terminalSelector.querySelector(DEF_SETTINGS.terminal_output)
    
-  let terminal_input = terminalSelector.querySelector(DEF_SETTINGS.terminal_input)  
+    let terminal_input = terminalSelector.querySelector(DEF_SETTINGS.terminal_input)  
     
+    
+    // MAKE SURE QUERY SELECTORS WHERE FOUND!
     if(terminal_console == null){
       throw {
           message: `Could not find ${DEF_SETTINGS.terminal_output} on page used for terminal_output`
@@ -335,9 +340,6 @@ if(DEF_SETTINGS.speech_to_text == true){
 
     // FUNCTION TO OUTPUT TO TERMINAL (WITH TERMINAL PROMPT)
     function termEcho(command) {
-      
-       
-      
       terminal_console.innerHTML += `${DEF_SETTINGS.prompt.replace('{{command}}', command)}`
       scrollTerminalToBottom()
     }
@@ -416,8 +418,8 @@ if(DEF_SETTINGS.speech_to_text == true){
     }
 
 
-    /// ADD ELEMENT TO TERMINAL BY ID, HTML & CLASS NAME
-    function addElementWithID(id, html, class_name) {
+    /// ADD ELEMENT TO TERMINAL BY ID (REQUIRED), HTML (OPTIONAL), CLASS NAME (OPTIONAL), ELEMENT TYPE - DEFAULT IS DIV (OPTIONAL).
+    function addElementWithID(id, html, class_name, element_type) {
       try{
       if(!id){
         throw {
@@ -425,7 +427,11 @@ if(DEF_SETTINGS.speech_to_text == true){
         }
       }
       let g = null;
-      g = document.createElement('div');
+      if (element_type){
+      g = document.createElement(element_type)
+      } else{
+      g = document.createElement('div')  
+      }
       if (class_name) {
         g.setAttribute("class", class_name);
       }
@@ -523,7 +529,8 @@ if(DEF_SETTINGS.speech_to_text == true){
       
       
       // DEFAULT FUNCTION TO ECHO TO TERMINAL (WITH PROMPT)
-      function termEcho(value){        process.stdout.write(removeHTML(`${DEF_SETTINGS.prompt}`).replace('{{command}}',value) + '\n');
+      function termEcho(value){      
+        process.stdout.write(removeHTML(`${DEF_SETTINGS.prompt}`).replace('{{command}}',value) + '\n');
       }
       
       
