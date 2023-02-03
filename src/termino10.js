@@ -589,7 +589,8 @@ function disableTextToSpeech(){
       scroll_to_top: scrollTerminalToTop, // SCROLL TERMINAL TO TOP
       add_element: addElementWithID, // ADD HTML ELEMENT WITH ID TO TERMINAL,
       remove_element: removeElementWithID, // REMOVE HTML ELEMENT WITH ID TO TERMINAL,
-      kill: termKill // KILL THE TERMIMAL - IE.. SET INPUT TO DISABLED & CLEAR THE TERMINAL.
+      kill: termKill, // KILL THE TERMIMAL - IE.. SET INPUT TO DISABLED & CLEAR THE TERMINAL.
+      speak:SpeechToText
     }} else{
     /// THIS IS THE COMMAND-LINE CONNECTOR FOR TERMINO.JS APP - EXECUTED VIA COMMAND LINE - IE NODE.JS ETC..  
       // ie; WRITE YOUR TERMINO.JS APP IN BROWSER & BE ABLE TO USE THEM IN NODE.JS VIA A TERMINAL TOO!
