@@ -368,7 +368,7 @@ function disableTextToSpeech(){
         scrollTerminalToBottom()
         
         // speak question - if enabled.          
-        SpeechToText(question)
+      //  SpeechToText(question)
         
         InputState = true;
 
@@ -416,7 +416,7 @@ function disableTextToSpeech(){
     function termOutput(command) {
       terminal_console.innerHTML += `${DEF_SETTINGS.output.replace('{{command}}', command)}`
       scrollTerminalToBottom()
-      SpeechToText(command)
+    //  SpeechToText(command)
     }
 
 
