@@ -66,3 +66,54 @@ input.addEventListener('keydown', function(e) {
     runCommand(input.value);
   }
 });
+
+
+
+
+
+
+
+
+
+
+
+////////
+
+/* function to parse argument and values for commands in strings like "python -h -V -add 1" */
+function parseArgs(str) {
+  var args = {};
+  var re = /\s*-([^\s]+)\s+([^\s]+)/g;
+  var match;
+  while (match = re.exec(str)) {
+    args[match[1]] = match[2];
+  }
+  return args;
+}
+/* create a list with  python command that on "python" console log hello. And on python -h console log help. Add support for multiple Args used.   Add option to set value required for arg. */
+var python = function(args) {
+  if (args.h) {
+    console.log('Help');
+  } else if (args.V) {
+    console.log('Version');
+  } else if (args.add) {
+    console.log(parseInt(args.add) + 1);
+  } else {
+    console.log('Hello');
+  }
+};
+/* example usage of python add 1. */
+python(parseArgs('python add 1'));
+/* similar python list but with multiple argument required for a function. */
+var python = function(args) {
+  if (args.h) {
+    console.log('Help');
+  } else if (args.V) {
+    console.log('Version');
+  } else if (args.add) {
+    console.log(parseInt(args.add) + 1);
+  } else if (args.sub) {
+    console.log(parseInt(args.sub) - 1);
+  } else {
+    console.log('Hello');
+  }
+};
