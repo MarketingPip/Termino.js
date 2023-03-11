@@ -35,3 +35,11 @@ import ansiUp from "https://cdn.skypack.dev/ansi_up@5.1.0"
 let t = new ansiUp
 console.log(t.ansi_to_html(txt))
 ```
+
+
+```
+/* function to detect if string contains ansi escape codes with regex. */
+function hasAnsi(str) {
+  return /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g.test(str);
+}
+```
