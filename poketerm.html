@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Termino.js PokeAPI Example</title>
+    <style>
+      body{
+        padding:0;
+         background-color: black;
+      }
+      #terminal {
+        font-family: 'Lucida Console', Monaco, monospace;
+        background-color: black;
+        color: white;
+        height: 500px;
+        width: 100%;
+        margin: 0 auto;
+      }
+      .termino-input {
+        background-color: black;
+        color: white;
+        border: none;
+        width: 100%;
+        height: 20px;
+        font-family: 'Lucida Console', Monaco, monospace;
+        font-size: 16px;
+        outline: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="terminal">
+      <pre><code class="termino-console"></code></pre>
+      <textarea class="termino-input" rows="1" wrap="hard"></textarea>
+    </div>
+    <script type="module">
+      import {Termino} from 'https://cdn.jsdelivr.net/gh/MarketingPipeline/Termino.js@v1.0.2/dist/termino.min.js';
+      
+      // Create the terminal instance
+      const term = Termino(document.getElementById('terminal'));
+      
+      // Display welcome message
+      term.echo('Welcome to the PokeAPI terminal!');
+      
+      // Listen for input events
+      async function PokeTerm(){
+        let input = await term.input("Type a Pokemon Name:")
+       try{
+          const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${input.toLowerCase()}`);
+        const data = await response.json();
+        
+        // Display the information in the terminal
+        term.echo(`Name: ${data.name}`);
+        term.echo(`Type(s): ${data.types.map(type => type.type.name).join(', ')}`);
+        term.echo(`Abilities: ${data.abilities.map(ability => ability.ability.name).join(', ')}`);
+        term.echo(`Height: ${data.height / 10} m`);
+        term.echo(`Weight: ${data.weight / 10} kg`);
+        term.echo('');
+       }catch(error){
+         term.echo("Try again, something went wrong!")
+       }
+       PokeTerm()
+      }
+      
+      PokeTerm() 
+    </script>
+  </body>
+</html>
