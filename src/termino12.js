@@ -342,7 +342,32 @@ if(DEF_SETTINGS.speech_to_text == true){
   return null;
 }    
       
+ 
+    let commands = {};
   
+
+  // Function to add a custom command
+   function addCommand(command, handler) {
+    // Add the command and its corresponding handler function to the commands object
+     if(!commands[command]){
+    commands[command] = handler;
+     }else{
+       console.log(command)
+     }
+  }
+
+  // Function to handle user input
+  async function handleInput(input) {
+    // Split input by space to get command and arguments
+    const [command, ...args] = input.split(' ');
+    // Check if the command exists in the commands object
+    if (commands.hasOwnProperty(command)) {
+      // Call the handler function associated with the command, passing in the arguments
+      await commands[command](...args);
+    } 
+  }
+    
+      
  // FUNCTION TO TURN TEXT TO SPEECH ON     
 function enableTextToSpeech(){
   DEF_SETTINGS.speech_to_text = true
@@ -354,6 +379,7 @@ function disableTextToSpeech(){
 }      
       
       
+      
     // TERMINAL INPUT STATE / TERMINAL PROMPT FUNCTION  
     let InputState = false;
 
@@ -363,6 +389,9 @@ function disableTextToSpeech(){
         /// add the question value to terminal
         terminal_console.innerHTML += `${DEF_SETTINGS.input.replace('{{command}}', question)}`
 
+        
+       
+        
         termClearValue()
 
         scrollTerminalToBottom()
@@ -564,9 +593,12 @@ function disableTextToSpeech(){
             window.event.preventDefault()
           }
 
-          /// ECHO USER INPUT     
+          
           termEcho(terminalSelector.querySelector(DEF_SETTINGS.terminal_input).value)
 
+          
+          /// ECHO USER INPUT     
+          handleInput(terminalSelector.querySelector(DEF_SETTINGS.terminal_input).value) 
 
           /// CLEAR OUTPUT  
           termClearValue()
@@ -590,7 +622,8 @@ function disableTextToSpeech(){
       add_element: addElementWithID, // ADD HTML ELEMENT WITH ID TO TERMINAL,
       remove_element: removeElementWithID, // REMOVE HTML ELEMENT WITH ID TO TERMINAL,
       kill: termKill, // KILL THE TERMIMAL - IE.. SET INPUT TO DISABLED & CLEAR THE TERMINAL.
-      speak:SpeechToText
+      speak:SpeechToText,
+      addCommand:addCommand
     }} else{
     /// THIS IS THE COMMAND-LINE CONNECTOR FOR TERMINO.JS APP - EXECUTED VIA COMMAND LINE - IE NODE.JS ETC..  
       // ie; WRITE YOUR TERMINO.JS APP IN BROWSER & BE ABLE TO USE THEM IN NODE.JS VIA A TERMINAL TOO!
@@ -650,5 +683,23 @@ function disableTextToSpeech(){
 
 
 
+        let term= Termino(document.getElementById("terminal"))
+        term.echo("Hello world from https://github.com/MarketingPipeline")
+
+
+
+
+
+term.addCommand('/hello', (arg1, arg2) => {
+  console.log(arg1, arg2);
+});
+
+await term.addCommand('/jakeislame', (arg1, arg2) => {
+  if(arg1 === "true"){
+    term.echo("we know")
+  } else{
+       term.echo("sorry wrong answer")
+  }
+});
 
 
