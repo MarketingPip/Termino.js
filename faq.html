@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Live Demo | Termino.js</title>
+
+<link rel="stylesheet" href="https://unpkg.com/@primer/css/dist/primer.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/styles/github.min.css">
+  
+  <script src="./assets/termino-demos.min.js" type="module"></script>  
+<meta name="author" content="github.com/marketingpipeline">
+<meta name="description" content="Termino.js Live Demo">
+<meta name="keywords" content="terminal, javascript, js, npm, opensource, github, web-terminal, html, frontend, web-shell, ssh, console, command-line, command-line apps, front-end">
+ 
+<meta property="og:title" content="Termino.js Demo" />
+<meta property="og:description" content="Termino.js Live Demo" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+ /* styling used  for the Termino.js - terminal demo(s) */   
+.repl {
+    text-shadow: none;
+    color: #333;
+    background: black;
+    padding: 0;
+    text-align: left;
+    width: 600px;
+    margin: 50px auto;
+    border-radius: 3px;
+    border: 1px solid #ddd;
+    overflow:hidden;
+}
+
+.repl code {
+    height: 200px;
+    overflow-y: scroll;
+}
+
+pre {
+    margin: 0;
+}
+
+.termino-console {
+    padding: 11px 16px;
+    display: block;
+}
+
+.termino-input-container {
+    display: flex;
+}
+
+.termino-input-container > * {
+    outline: none;
+    border: none;
+    white-space: pre-wrap;
+    font-family: monospace;
+    color: #444;
+    background: black;
+    min-height: 14px; /* minimum one line */
+    padding: 10px;
+    margin: 0;
+    border-radius: 0 0 3px 3px;
+
+}
+
+.termino-input {
+    flex: 1;
+    height: 100%; /* start off one line tall */
+    resize:none;
+}
+
+.termino-prompt {a
+    font-weight: bold;
+    padding: 8px 10px;
+}
+
+@media screen and (max-width : 800px) {
+
+    .repl {
+        width: 100%;
+    }
+
+}
+
+.lua {
+  resize:none;
+  overflow:hidden;
+}
+
+pre{
+  
+}
+
+.repl code{
+    scroll-behavior:smooth;
+}
+
+/* hide scrollbar but allow scrolling */
+.repl code {
+  -ms-overflow-style: none; /* for Internet Explorer, Edge */
+  scrollbar-width: none; /* for Firefox */
+  overflow-y: scroll; 
+}
+
+.repl code::-webkit-scrollbar {
+  display: none; /* for Chrome, Safari, and Opera */
+}
+
+
+.loading:after {
+  content: ' .';
+  animation: dots 1s steps(5, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% {
+    color: rgba(0,0,0,0);
+    text-shadow:
+      .25em 0 0 rgba(0,0,0,0),
+      .5em 0 0 rgba(0,0,0,0);}
+  40% {
+    color: white;
+    text-shadow:
+      .25em 0 0 rgba(0,0,0,0),
+      .5em 0 0 rgba(0,0,0,0);}
+  60% {
+    text-shadow:
+      .25em 0 0 white,
+      .5em 0 0 rgba(0,0,0,0);}
+  80%, 100% {
+    text-shadow:
+      .25em 0 0 white,
+      .5em 0 0 white;}}
+  </style>
+  
+</head>
+<div class="color-bg-canvas-inset pb-6">
+  <header class="container-lg mx-auto p-responsive d-flex flex-items-center flex-wrap flex-md-nowrap pt-3 pb-6">
+    <div>
+      <a class="text-white mr-3" href="https://github.com/MarketingPipeline/Termino.js/wiki">Docs</a>
+      <a class="text-white mr-3" href="https://github.com/MarketingPipeline/Termino.js/blob/master/CHANGELOG.md">Changelog</a>
+      <a class="text-white mr-3" href="https://cdn.jsdelivr.net/gh/MarketingPipeline/Termino.js/">CDN</a>
+      <a class="text-white mr-3" href="https://cdn.jsdelivr.net/gh/MarketingPipeline/Termino.js/">Demo</a>
+      <a class="text-white mr-3" href="https://cdn.jsdelivr.net/gh/MarketingPipeline/Termino.js/">FAQ</a>
+    </div>
+  </header>
+  <section class="FAQ-module--FAQ--X3H+m"><h3 class="Heading-module--Heading--uYacp Heading-module--Heading--3--aYrrT FAQ-module--FAQ__heading--1eooI FAQ-module--FAQ__heading--center--sqQ+D FAQ-module--FAQ__heading--with-margin--2XX29">Frequently asked questions</h3><details class="Accordion-module--Accordion--EpJ9D"><summary class="Accordion-module--Accordion__summary--No-EY"><span aria-hidden="true" class="Accordion-module--Accordion__summary--collapsed--B3om7"></span><h4 class="Heading-module--Heading--uYacp Heading-module--Heading--4--wWm+k Accordion-module--Accordion__summary-heading--i99Ow">What's included in the GitHub for Startups offer?</h4><span aria-hidden="true" class="Accordion-module--Accordion__summary--expanded--frssY"></span></summary><section class="Accordion-module--Accordion__content--4EmbR"><p class="Accordion-module--Accordion__content-item--aghM4"><span class="Text-module--Text--yhV1b Text-module--Text--muted--8xMEA Text-module--Text--300--P3e7z">All GitHub for Startups companies receive up to 20 seats of GitHub Enterprise for free for year one and 50% off year two. Learn more about the features and capabilities of GitHub Enterprise <a href="https://www.github.com" class="InlineLink-module--InlineLink--eXQM5" target="_blank" rel="noreferrer"><span class="Text-module--Text--yhV1b Text-module--Text--default--Zxl+T Text-module--Text--300--P3e7z">here</span></a>.</span></p></section></details><details class="Accordion-module--Accordion--EpJ9D"><summary class="Accordion-module--Accordion__summary--No-EY"><span aria-hidden="true" class="Accordion-module--Accordion__summary--collapsed--B3om7"></span><h4 class="Heading-module--Heading--uYacp Heading-module--Heading--4--wWm+k Accordion-module--Accordion__summary-heading--i99Ow">Who is eligible to apply?</h4><span aria-hidden="true" class="Accordion-module--Accordion__summary--expanded--frssY"></span></summary><section class="Accordion-module--Accordion__content--4EmbR"><p class="Accordion-module--Accordion__content-item--aghM4"><span class="Text-module--Text--yhV1b Text-module--Text--muted--8xMEA Text-module--Text--300--P3e7z">Startups who meet the following criteria are eligible to apply for the program:</span></p><ol class="Accordion-module--Accordion__content-item--aghM4"><li><span class="Text-module--Text--yhV1b Text-module--Text--muted--8xMEA Text-module--Text--300--P3e7z">Must be associated with a current GitHub for Startups partner.</span></li><li><span class="Text-module--Text--yhV1b Text-module--Text--muted--8xMEA Text-module--Text--300--P3e7z">Self-funded or funded (Seed-Series A)</span></li><li><span class="Text-module--Text--yhV1b Text-module--Text--muted--8xMEA Text-module--Text--300--P3e7z">Not a current GitHub Enterprise customer</span></li><li><span class="Text-module--Text--yhV1b Text-module--Text--muted--8xMEA Text-module--Text--300--P3e7z">Must not have previously received credits for GitHub Enterprise</span></li></ol></section></details><details class="Accordion-module--Accordion--EpJ9D"><summary class="Accordion-module--Accordion__summary--No-EY"><span aria-hidden="true" class="Accordion-module--Accordion__summary--collapsed--B3om7"></span><h4 class="Heading-module--Heading--uYacp Heading-module--Heading--4--wWm+k Accordion-module--Accordion__summary-heading--i99Ow">What if my startup is not eligible? Are there other resources for me?</h4><span aria-hidden="true" class="Accordion-module--Accordion__summary--expanded--frssY"></span></summary><section class="Accordion-module--Accordion__content--4EmbR"><p class="Accordion-module--Accordion__content-item--aghM4"><span class="Text-module--Text--yhV1b Text-module--Text--muted--8xMEA Text-module--Text--300--P3e7z">If you’re not currently eligible for the GitHub for Startups but would like to try GitHub Enterprise, please feel to sign up for a trial <a href="https://www.github.com" class="InlineLink-module--InlineLink--eXQM5" target="_blank" rel="noreferrer"><span class="Text-module--Text--yhV1b Text-module--Text--default--Zxl+T Text-module--Text--300--P3e7z">here</span></a>.</span></p></section></details><details class="Accordion-module--Accordion--EpJ9D"><summary class="Accordion-module--Accordion__summary--No-EY"><span aria-hidden="true" class="Accordion-module--Accordion__summary--collapsed--B3om7"></span><h4 class="Heading-module--Heading--uYacp Heading-module--Heading--4--wWm+k Accordion-module--Accordion__summary-heading--i99Ow">How can my organization become a GitHub for Startups partner?</h4><span aria-hidden="true" class="Accordion-module--Accordion__summary--expanded--frssY"></span></summary><section class="Accordion-module--Accordion__content--4EmbR"><p class="Accordion-module--Accordion__content-item--aghM4"><span class="Text-module--Text--yhV1b Text-module--Text--muted--8xMEA Text-module--Text--300--P3e7z">Any investor, accelerator, or startup support organization is eligible to apply for the GitHub for Startups program.</span></p><p class="Accordion-module--Accordion__content-item--aghM4"><span class="Text-module--Text--yhV1b Text-module--Text--muted--8xMEA Text-module--Text--300--P3e7z"><a href="https://www.github.com" class="InlineLink-module--InlineLink--eXQM5" target="_blank" rel="noreferrer"><span class="Text-module--Text--yhV1b Text-module--Text--default--Zxl+T Text-module--Text--300--P3e7z">Apply here</span></a>.</span></p></section></details></section>
+  
+
+    
+</div>
+
+<footer>
+  <hr>
+  <center><p>Termino.js was originally created by Jared Van Valkengoed at <br> <a href="https://github.com/MarketingPipeline">MarketingPipeline</a></p></center>
+  </footer>
+	</html>
