@@ -59,3 +59,20 @@ term.plugin("helloAsync", helloWorldAsync(term));
 term.helloAsync({ delay: 3000 });
 ```
 In this example, the helloWorldAsync() function creates an asynchronous plugin that waits for a specified amount of time before echoing "Hello, world!". The delay option specifies how long to wait before echoing the message. The plugin() method is used to add this plugin to Termino.js with the name "helloAsync". Finally, the helloAsync() method is called with the delay option set to 3000 milliseconds.
+
+
+### Share your plugins!
+Just like any other code you can choose to share with the community - you can share your plugins you have created with other developers that could benefit from them!
+
+Here's a basic example showing how to used a shared plugin for Termino.js!
+```js
+// Import the Termino.js plugin
+import pluginName from '<plugin-name>';
+
+// Register the plugin
+term.plugin("coolPlugin", pluginName());
+
+// Call the plugin
+term.coolPlugin()
+```
+You can find a list of shared plugins (here)[f]
