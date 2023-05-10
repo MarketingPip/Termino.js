@@ -1,4 +1,12 @@
-## Making a game with Termino.js
+# How to build a game using Termino.js
+
+## Introduction
+Termino.js is a powerful JavaScript library that enables you to build command based app that works in a web application & in a non browser based enviroment. It's highly customizable and easy to use, making it an ideal choice for building things such as text-based adventure games & more. In this article, we'll explore how to build a game using Termino.js.
+
+
+
+## How to build a game using Termino.js
+Building a game using Termino.js is a fun and engaging way to learn about the library. 
 
 Here's an example of building a simple guessing game using Termino.js:
 
