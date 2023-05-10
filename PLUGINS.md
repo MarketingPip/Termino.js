@@ -16,14 +16,30 @@ function helloWorld(term) {
     term.echo("Hello, world!");
   };
 }
-```
-
 // Add the plugin to Termino.js
 term.plugin("hello", helloWorld(term));
 
 // Call the plugin
 term.hello();
+```
 In this example, the helloWorld() function creates a plugin that echoes "Hello, world!" to the terminal. The plugin() method is then used to add this plugin to Termino.js with the name "hello". Finally, the hello() method is called to execute the plugin.
+
+Here is another similar example: 
+```js
+function myPlugin(term) {
+  // Define the function to be used in the plugin
+  function hello(x) {
+    console.log(x);
+  }
+
+  // Add the plugin method to the Termino.js instance
+  term.plugin('world', hello);
+}
+
+// Example usage:
+myPlugin(term);
+term.world('Hello, world!'); // Outputs "Hello, world!" in the console
+```
 
 ### Asynchronous Example
 Plugins can also be asynchronous. Here is an example of an asynchronous plugin that waits for a specified amount of time before echoing "Hello, world!":
@@ -36,11 +52,10 @@ function helloWorldAsync(term) {
     term.echo("Hello, world!");
   };
 }
-```
-
 // Add the plugin to Termino.js
 term.plugin("helloAsync", helloWorldAsync(term));
 
 // Call the plugin
 term.helloAsync({ delay: 3000 });
+```
 In this example, the helloWorldAsync() function creates an asynchronous plugin that waits for a specified amount of time before echoing "Hello, world!". The delay option specifies how long to wait before echoing the message. The plugin() method is used to add this plugin to Termino.js with the name "helloAsync". Finally, the helloAsync() method is called with the delay option set to 3000 milliseconds.
