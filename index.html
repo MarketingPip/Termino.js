@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Your website's meta description goes here" />
+    <title>Termino.js</title>
+    <link rel="stylesheet" href="https://unpkg.com/@primer/css/dist/primer.min.css" />
+  </head>
+   <style>
+ /* styling used  for the Termino.js - terminal demo(s) */   
+.repl {
+    text-shadow: none;
+    color: #333;
+    background: black;
+    padding: 0;
+    text-align: left;
+    width: 600px;
+    margin: 50px auto;
+    border-radius: 3px;
+    border: 1px solid #ddd;
+    overflow:hidden;
+}
+
+.repl code {
+    height: 200px;
+    overflow-y: scroll;
+}
+
+pre {
+    margin: 0;
+}
+
+.termino-console {
+    padding: 11px 16px;
+    display: block;
+}
+
+.termino-input-container {
+    display: flex;
+}
+
+.termino-input-container > * {
+    outline: none;
+    border: none;
+    white-space: pre-wrap;
+    font-family: monospace;
+    color: #444;
+    background: black;
+    min-height: 14px; /* minimum one line */
+    padding: 10px;
+    margin: 0;
+    border-radius: 0 0 3px 3px;
+
+}
+
+.termino-input {
+    flex: 1;
+    height: 100%; /* start off one line tall */
+    resize:none;
+}
+
+.termino-prompt {a
+    font-weight: bold;
+    padding: 8px 10px;
+}
+
+@media screen and (max-width : 800px) {
+
+    .repl {
+        width: 100%;
+    }
+
+}
+
+.lua {
+  resize:none;
+  overflow:hidden;
+}
+
+pre{
+  
+}
+
+.repl code{
+    scroll-behavior:smooth;
+}
+
+/* hide scrollbar but allow scrolling */
+.repl code {
+  -ms-overflow-style: none; /* for Internet Explorer, Edge */
+  scrollbar-width: none; /* for Firefox */
+  overflow-y: scroll; 
+}
+
+.repl code::-webkit-scrollbar {
+  display: none; /* for Chrome, Safari, and Opera */
+}
+
+
+.loading:after {
+  content: ' .';
+  animation: dots 1s steps(5, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% {
+    color: rgba(0,0,0,0);
+    text-shadow:
+      .25em 0 0 rgba(0,0,0,0),
+      .5em 0 0 rgba(0,0,0,0);}
+  40% {
+    color: white;
+    text-shadow:
+      .25em 0 0 rgba(0,0,0,0),
+      .5em 0 0 rgba(0,0,0,0);}
+  60% {
+    text-shadow:
+      .25em 0 0 white,
+      .5em 0 0 rgba(0,0,0,0);}
+  80%, 100% {
+    text-shadow:
+      .25em 0 0 white,
+      .5em 0 0 white;}}
+  </style>
+  <body>
+    <nav class="bg-gray-light p-3">
+      <div class="container-xl d-flex flex-items-center">
+        <a class="h4 mb-0 text-normal" href="#">Termino.js</a>
+        <div class="d-flex flex-auto"></div>
+        <ul class="d-flex list-style-none">
+          <li><a class="text-white mr-3" href="#">Home</a></li>
+          <li><a class="text-white mr-3" href="#">About</a></li>
+          <li><a class="text-white mr-3" href="#">Contact</a></li>
+             <li><a class="text-white mr-3" href="#">Contact</a></li>
+             <li><a class="text-white mr-3" href="#">Contact</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container-xl my-5">
+      <h1 class="f00-light">Termino.js - The Ultimate Command-Line App Builder for Browser and Process-Based Environments</h1>
+        <section class="section--standalone" id="Example_Terminal_1">
+    <div class="repl">
+      <pre><code class="termino-console"></code></pre>
+        <div class="termino-input-container">
+         
+              <label id="termino-prompt" for="termino-input">→ </label>
+          <textarea  class="termino-input"   rows="1" wrap="hard"></textarea>
+        </div>
+    </div> 
+        <p class="f3 mb-4">Create terminals in the browser with <a href="https://github.com/MarketingPipeline">MarketingPipeline</a>'s Termino.js library - great for making terminal animations, terminal like apps & terminal based games. </p><ul class="f5"  style="padding-left: 20px;  !important; "><li>Super easy to use</li><li>Supports both browser and process-based environments</li><li>Highly customizable to your own liking / needs (bring your own CSS / HTML - edit your terminal to your style)!</li><li>Await / promise-based inputs & more</li>
+      <li>Add your own features / functions (including functions on keys or click events!)</li><li>Lightweight - no dependencies</li><li>Create as many terminals you want!</li><li> and LOTS more!</li> </ul> <br> 
+ 
+     <p>A JavaScript library made by <a href="https://github.com/MarketingPipeline">@MarketingPipeline</a>. Source code is available on <a href="https://github.com/MarketingPipeline/Ace-Editor-Web-Component">GitHub</a>. License can be found <a href="https://github.com/MarketingPipeline/Ace-Editor-Web-Component/blob/main/LICENSE">here</a>.</p>
+  
+      <p  class="f3 mb-4">Termino.js is a powerful JavaScript library that allows you to build command-line apps for both the browser and process-based environments. With Termino.js, you can easily create custom interfaces and workflows that are familiar to command-line users, making it an ideal solution for a wide range of projects.
+
+      <h3>Key Features</h3>
+
+      <li>Supports both browser and process-based environments</li>
+<li>Customizable interface and workflo</li>
+      <li>Easy to use and highly customizable</li>
+      <li>Supports a wide range of platforms and devices</li></p>
+    </div>
+
+    <footer class="border-top py-5 bg-gray-light">
+      <div class="container-xl">
+        <p class="text-center f5 text-gray-dark">Termino.js was originally created by Jared Van Valkengoed at <br> <a href="https://github.com/MarketingPipeline">MarketingPipeline</a>
+      </div>
+    </footer>f
+  </body>
+</html>
