@@ -690,16 +690,4 @@ function disableTextToSpeech(){
 
 
 
-term.addCommand('/hello', (arg1, arg2) => {
-  console.log(arg1, arg2);
-});
-
- term.addCommand('/jakeislame', (arg1, arg2) => {
-  if(arg1 === "true"){
-    term.echo("we know")
-  } else{
-       term.echo("sorry wrong answer")
-  }
-});
-
 
