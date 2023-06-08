@@ -150,9 +150,10 @@ export function Termino (terminalSelector, keyCodes, settings) {
    
 
     if(!terminalSelector){
-       throw {
-          message: "No terminalSelector was provided"
-        }
+      console.log(terminalSelector)
+    //   throw {
+       //   message: "No terminalSelector was provided"
+      //  }
     }
     
     
