@@ -150,10 +150,9 @@ export function Termino (terminalSelector, keyCodes, settings) {
    
 
     if(!terminalSelector){
-      console.log(terminalSelector)
-    //   throw {
-       //   message: "No terminalSelector was provided"
-      //  }
+       throw {
+          message: "No terminalSelector was provided"
+        }
     }
     
     
@@ -684,8 +683,8 @@ function disableTextToSpeech(){
 
 
 
-        let term= Termino(document.getElementById("terminal"))
-        term.echo("Hello world from https://github.com/MarketingPipeline")
+        //let term= Termino(document.getElementById("terminal"))
+      //  term.echo("Hello world from https://github.com/MarketingPipeline")
 
 
 
@@ -695,7 +694,7 @@ term.addCommand('/hello', (arg1, arg2) => {
   console.log(arg1, arg2);
 });
 
-await term.addCommand('/jakeislame', (arg1, arg2) => {
+ term.addCommand('/jakeislame', (arg1, arg2) => {
   if(arg1 === "true"){
     term.echo("we know")
   } else{
