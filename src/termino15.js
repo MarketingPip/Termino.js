@@ -56,6 +56,21 @@ export function Termino (terminalSelector, keyCodes, settings) {
   
   try {
     
+    let listeners = {};
+    
+    function on(eventName, callback) {
+    if (!listeners[eventName]) {
+      listeners[eventName] = [];
+    }
+    listeners[eventName].push(callback);
+  }
+    
+   function emit(eventName, data) {
+    const eventListeners = listeners[eventName];
+    if (eventListeners) {
+      eventListeners.forEach(callback => callback(data));
+    }
+  }
     
     // ALLOW DEVELOPERS TO CONNECT TO A NODE.JS PROCRESS 
     function isCommandLine() {
@@ -358,6 +373,8 @@ if(DEF_SETTINGS.speech_to_text == true){
 
   // Function to handle user input
   async function handleInput(input) {
+    
+    emit('data', input);
     // Split input by space to get command and arguments
     const [command, ...args] = input.split(' ');
     // Check if the command exists in the commands object
@@ -414,6 +431,7 @@ function disableTextToSpeech(){
             if (value.length != 0) {
               // echo value to terminal
               termEcho(value)
+              emit('data', value)
               resolve(value)
             } else {
               // return an empty prompt
@@ -623,6 +641,7 @@ function disableTextToSpeech(){
       remove_element: removeElementWithID, // REMOVE HTML ELEMENT WITH ID TO TERMINAL,
       kill: termKill, // KILL THE TERMIMAL - IE.. SET INPUT TO DISABLED & CLEAR THE TERMINAL.
       speak:SpeechToText,
+      on:on,
       addCommand:addCommand
     }} else{
     /// THIS IS THE COMMAND-LINE CONNECTOR FOR TERMINO.JS APP - EXECUTED VIA COMMAND LINE - IE NODE.JS ETC..  
