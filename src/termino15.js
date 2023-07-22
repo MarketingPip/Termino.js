@@ -626,7 +626,16 @@ function disableTextToSpeech(){
 
       }
 
-        } /// DEFAULT TERMINO FUNCTIONS FOR DEVELOPER USAGE - These can only be used for a (WEB BASED TERMINAL)
+        } 
+      
+      
+        function exec(command){
+         handleInput(command) 
+      }
+      
+      
+      
+      /// DEFAULT TERMINO FUNCTIONS FOR DEVELOPER USAGE - These can only be used for a (WEB BASED TERMINAL)
     return {
       echo: termEcho, // ECHO MESSAGE TO TERM WITH CAROT
       output: termOutput, // ECHO MESSAGE TO TERM WITHOUT CAROT
@@ -642,7 +651,8 @@ function disableTextToSpeech(){
       kill: termKill, // KILL THE TERMIMAL - IE.. SET INPUT TO DISABLED & CLEAR THE TERMINAL.
       speak:SpeechToText,
       on:on,
-      addCommand:addCommand
+      addCommand:addCommand,
+      exec:exec /// Execute Command 
     }} else{
     /// THIS IS THE COMMAND-LINE CONNECTOR FOR TERMINO.JS APP - EXECUTED VIA COMMAND LINE - IE NODE.JS ETC..  
       // ie; WRITE YOUR TERMINO.JS APP IN BROWSER & BE ABLE TO USE THEM IN NODE.JS VIA A TERMINAL TOO!
