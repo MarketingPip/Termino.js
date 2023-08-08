@@ -164,10 +164,18 @@ export function Termino (terminalSelector, keyCodes, settings) {
     
    
 
-    if(!terminalSelector){
+      if(!terminalSelector){
+  
+     if(terminalSelector === null){
+        throw {
+          message: `Could not find: QuerySelector used for Termino.js not found`
+        }
+     }
+    if(terminalSelector === undefined){
        throw {
           message: "No terminalSelector was provided"
         }
+      }
     }
     
     
@@ -400,7 +408,7 @@ function disableTextToSpeech(){
     // TERMINAL INPUT STATE / TERMINAL PROMPT FUNCTION  
     let InputState = false;
 
-    function termInput(question) {
+    function termInput(question, callback) {
       return new Promise(function(resolve) {
 
         /// add the question value to terminal
@@ -428,14 +436,23 @@ function disableTextToSpeech(){
             termClearValue()
             terminalSelector.querySelector(DEF_SETTINGS.terminal_input).removeEventListener('keypress', handleCommandForQuestion);
             InputState = false;
+            
+            function getCallBack(val){
+              if(callback){
+                callback(val)
+              }
+            }
+            
             if (value.length != 0) {
               // echo value to terminal
               termEcho(value)
               emit('data', value)
+              getCallBack(value)
               resolve(value)
             } else {
               // return an empty prompt
               termEcho("")
+              getCallBack("")
               resolve()
             }
 
@@ -453,16 +470,22 @@ function disableTextToSpeech(){
 
 
     // FUNCTION TO OUTPUT TO TERMINAL (WITH TERMINAL PROMPT)
-    function termEcho(command) {
+    function termEcho(command, callback = null) {
       terminal_console.innerHTML += `${DEF_SETTINGS.prompt.replace('{{command}}', command)}`
       scrollTerminalToBottom()
+      if(callback){
+        callback()
+      }
     }
 
 
     // FUNCTION TO OUTPUT TO TERMINAL (WITHOUT TERMINAL PROMPT)
-    function termOutput(command) {
+    function termOutput(command, callback = null) {
       terminal_console.innerHTML += `${DEF_SETTINGS.output.replace('{{command}}', command)}`
       scrollTerminalToBottom()
+       if(callback){
+        callback()
+      }
     //  SpeechToText(command)
     }
 
@@ -712,11 +735,11 @@ function disableTextToSpeech(){
 
 
 
-        //let term= Termino(document.getElementById("terminal"))
-      //  term.echo("Hello world from https://github.com/MarketingPipeline")
+async function test(callbackValue){
+  console.log(callbackValue)
+ let t =  await term.input("cool2")
+ console.log(t)
+}
 
-
-
-
-
-
+  let term= Termino(document.getElementById("terminal"))
+await term.input("cool", test)
