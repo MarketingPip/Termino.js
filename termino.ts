@@ -196,6 +196,50 @@ export function Termino(terminalSelector: HTMLElement, keyCodes: { id: string, k
       terminalSelector.querySelector(DEF_SETTINGS.terminal_input)?.setAttribute("placeholder", DEF_SETTINGS.terminal_killed_placeholder);
     }
 
+    
+    async function checkIfCommand(): Promise<void> {
+
+  let key: number = window.event.keyCode;
+console.log(key)
+  /// RUN ANY FUNCTIONS FOR KEYCODES / KEYBIND SHORTCUTS / BUTTONS. 
+  for (let i: number = 0; i < KEYCODES.length; i++) {
+    if (key === KEYCODES[i].key_code) {
+      try {
+        if (KEYCODES[i].function) {
+          KEYCODES[i].function();
+        }
+      } catch (error) {
+        console.error(`Termino.js: KeyCode Function Error: ${error.message}`);
+        throw {
+          message: `Termino.js: KeyCode Function Error: ${error.message}`,
+        };
+      }
+    }
+  }
+
+  /// MAKE SURE USER IS NOT ANSWERING A QUESTION
+  if (InputState !== true) {
+
+    /// ECHO INPUT VALUE ON COMMAND BUTTON - BY DEFAULT IS ENTER. 
+    if (key === Command_Key) {
+
+      /// STOP ENTER FROM GOING DOWN / DOING WEIRD THINGS..
+      if (window.event.preventDefault) {
+        window.event.preventDefault();
+      }
+
+      termEcho(terminalSelector.querySelector(DEF_SETTINGS.terminal_input).value);
+ /// CLEAR OUTPUT  
+      termClearValue();
+      
+      /// ECHO USER INPUT     
+      handleInput(terminalSelector.querySelector(DEF_SETTINGS.terminal_input).value);
+
+     
+    }
+  }
+}
+    
     return {
       echo: termEcho,
       output: termOutput,
@@ -223,3 +267,5 @@ if (typeof document === 'undefined') {
 }
 
 // made with https://js2ts.com/
+        let term= Termino(document.getElementById("terminal"))
+        term.echo("Hello world from https://github.com/MarketingPipeline")
