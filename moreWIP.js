@@ -3,6 +3,7 @@
  * VERSION: 1.0.1 (WIP) / Need to do some tests + add console connector etc... 
  * LICENSED UNDER MIT LICENSE
  * MORE INFO CAN BE FOUND AT https://github.com/MarketingPipeline/Termino.js/
+ * Built By Jared Van Valkengoed
  */
 
 
@@ -47,6 +48,7 @@ if (typeof document != 'undefined') {
     await import('https://polyfill.io/v3/polyfill.min.js?features=Array.prototype.filter,console,document,JSON,Promise') ;
   })();
 }
+
 
 
 
@@ -113,42 +115,18 @@ export function Termino (terminalSelector, keyCodes, settings) {
     
     
     /// ALLOW DEVS TO PASS CUSTOM SETTINGS FOR TERMINAL
-    if (settings) {
-      // function to compare custom settings
-      function compare(json1, json2) {
-        var keys1 = Object.keys(json1);
-  var keys2 = Object.keys(json2);
-  if (keys1.length != keys2.length) {
-    return false;
+    // Update state options with user-provided options.
+  if (settings) {
+    Object.assign(DEF_SETTINGS, settings);
   }
-   
-   if (!json2.prompt.includes('{{command}}') || !json2.input.includes('{{command}}') || !json2.output.includes('{{command}}')) {
-     throw {
-           message: "Your overwritten Termino settings are not valid, {{command}} is required inside prompt, input & output."
-           }
-     return false
-    }   
-        
-  for (var i = 0; i < keys1.length; i++) {
-    
-   
-    
-    if (keys1[i] != keys2[i]) {
-      return false;
-    }
+
+  
+   // Check if custom settings include {{command}} in prompt, input, and output
+  if (!DEF_SETTINGS.prompt.includes('{{command}}') || !DEF_SETTINGS.input.includes('{{command}}') || !DEF_SETTINGS.output.includes('{{command}}')) {
+    throw {
+      message: "Custom Termino settings are not valid; {{command}} is required inside prompt, input, and output."
+    };
   }
-  return true;
-      }
-      // CUSTOM SETTINGS PASSED ARE NOT VALID
-      if (compare(DEF_SETTINGS, settings) != true) {
-        throw {
-          message: "Your overwritten Termino settings are not valid"
-        }
-      } else {
-        // CUSTOM SETTINGS ARE VALID
-        DEF_SETTINGS = settings
-      }
-    }
     
     
     
@@ -162,7 +140,19 @@ export function Termino (terminalSelector, keyCodes, settings) {
     
     /// WEB BROWSER BASED - TERMINO.JS
     
-   
+   function checkElementValueOrContentEditable(element) {
+  if (!element) {
+    throw new Error("Element is not provided.");
+  }
+
+  if ((element.tagName === "INPUT" || element.tagName === "TEXTAREA") ||
+    (element.hasAttribute("contenteditable") && element.getAttribute("contenteditable").toLowerCase() !== "false")) {
+    return true;
+  }
+
+   throw new Error("Element is neither an input element nor content-editable.");
+}
+
 
       if(!terminalSelector){
   
@@ -186,6 +176,9 @@ export function Termino (terminalSelector, keyCodes, settings) {
    
     let terminal_input = terminalSelector.querySelector(DEF_SETTINGS.terminal_input)  
     
+    let termValue = terminalSelector.querySelector(DEF_SETTINGS.terminal_input).value || terminalSelector.querySelector(DEF_SETTINGS.terminal_input).innerText  || terminalSelector.querySelector(DEF_SETTINGS.terminal_input).textContent
+    
+    
     
     // MAKE SURE QUERY SELECTORS WHERE FOUND!
     if(terminal_console == null){
@@ -201,6 +194,8 @@ export function Termino (terminalSelector, keyCodes, settings) {
     }
     
     
+    checkElementValueOrContentEditable(terminal_input)
+      
 
     /// DEFAULT TERMINAL KEY CODES  
     let KEYCODES = [{
@@ -438,7 +433,7 @@ function disableTextToSpeech(){
             if (window.event.preventDefault) {
               window.event.preventDefault()
             }
-            let value = terminalSelector.querySelector(DEF_SETTINGS.terminal_input).value
+            let value = termValue
             termClearValue()
             terminalSelector.querySelector(DEF_SETTINGS.terminal_input).removeEventListener('keypress', handleCommandForQuestion);
             InputState = false;
@@ -531,7 +526,13 @@ function disableTextToSpeech(){
 
     /// FUNCTION TO REMOVE / CLEAR INPUT VALUE
     function termClearValue() {
-      terminalSelector.querySelector(DEF_SETTINGS.terminal_input).value = ""
+      let element = terminalSelector.querySelector(DEF_SETTINGS.terminal_input) || terminalSelector.querySelector(DEF_SETTINGS.terminal_input)  || terminalSelector.querySelector(DEF_SETTINGS.terminal_input)
+      
+        if (element.tagName === "INPUT" || element.tagName === "TEXTAREA") {
+    element.value = "";
+  } else if (element.hasAttribute("contenteditable") && element.getAttribute("contenteditable").toLowerCase() !== "false") {
+    element.innerText = "";
+  }
     }
 
     /// FUNCTION TO DELAY TERMINAL OUTPUTS / ECHO ETC (AWAIT / PROMISE BASED) - EXAMPLE : await term.delay(xxx) ...     
@@ -640,12 +641,15 @@ function disableTextToSpeech(){
             window.event.preventDefault()
           }
 
+         termValue = terminalSelector.querySelector(DEF_SETTINGS.terminal_input).value || terminalSelector.querySelector(DEF_SETTINGS.terminal_input).innerText  || terminalSelector.querySelector(DEF_SETTINGS.terminal_input).textContent
           
-          termEcho(terminalSelector.querySelector(DEF_SETTINGS.terminal_input).value)
+          
+          console.log(termValue)
+          termEcho(termValue)
 
           
           /// ECHO USER INPUT     
-          handleInput(terminalSelector.querySelector(DEF_SETTINGS.terminal_input).value) 
+          handleInput(termValue) 
 
           /// CLEAR OUTPUT  
           termClearValue()
@@ -749,26 +753,15 @@ async function test(callbackValue){
 
   let term= Termino(document.getElementById("terminal"), null, {
       allow_scroll: true, // allow scroll up & down on terminal 
-      prompt: "<pre>just a test {{command}} </pre>", // default prompt / echo message -  {{command}} is required
-      input: "<pre>{{command}} </pre>", // input message - {{command}} is required
-      output: "<pre>{{command}}</pre>", // output message - {{command}} is required
-      command_key: 13, // default command key
-      terminal_killed_placeholder: "TERMINAL DISABLED", // default terminal input placeholder when killed. 
-      terminal_output: ".termino-console", // default output query selector
-      terminal_input: ".termino-input", // default input query selector
-      disable_terminal_input: false, // disable any user commands / inputs. --- Useful for making terminal animations etc!
-      speech_to_text:true, // Enable text to speech on output & inputs.
-    })
+      prompt: "<pre>{{command}} </pre>"})
 
  
-  term.addCommand('commandNotFound', async (data) => {
-    term.echo("test")
-
+  term.addCommand('commandNotFound', async (...args) => {
+  console.log(args[1])
 });
   
   term.on('commandNotFound', (data) => {
 term.output(`${data} is not a command.`) 
 });
+term.exec("commandNotFound")  
 
-
-// alll this shit needs merged and checked over
