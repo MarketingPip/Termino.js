@@ -828,10 +828,7 @@ async function test(callbackValue){
     organize(data, "Termino.js Output:");
   });
 
-  return {
-    // Provide a method to access the log array
-    getLog: () => logOutput,
-  };
+  return logOutput
 }
 
 
