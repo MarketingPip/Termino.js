@@ -697,6 +697,7 @@ function disableTextToSpeech(){
       kill: termKill, // KILL THE TERMIMAL - IE.. SET INPUT TO DISABLED & CLEAR THE TERMINAL.
       speak:SpeechToText,
       on:on,
+      emit:emit,
       addCommand:addCommand,
       exec:exec /// Execute Command 
     }} else{
@@ -769,17 +770,71 @@ async function test(callbackValue){
       prompt: "<pre> > {{command}} </pre>"})
 
  
-  term.addCommand('commandNotFound', async (...args) => {
- await term.input("hello3")
+  term.on('loggerUpdated', async (data) => {
+ console.log(data)
+    console.log(bb.getLog())
 });
   
 
-term.on('data', (data) => {
-console.log("Input to Termino.js:" +data)
-});
-
-term.on('output', (data) => {
-console.log("Output to Termino.js:" +data)
-});
 
 
+
+
+
+
+  
+   function logPlugin(term, addCommand = false) {
+  // Initialize the log output array
+  const logOutput = [];
+
+  // Function to organize and log data
+  function organize(data, type = null) {
+    // Create a timestamp for the log entry
+    const timestamp = new Date().toLocaleString();
+
+    if (!type) {
+      type = "Termino.js Input:";
+    }
+
+    // Format the log entry with a timestamp
+    const logEntry = `[${timestamp}] ${type} ${data.trim()}`;
+
+    // Append the log entry to the log area
+    logOutput.push(logEntry.trim());
+
+    term.emit("loggerUpdated", logOutput.join("\n"))
+  }
+
+  // Add a "log" command to the Termino.js instance
+  if(addCommand){   
+  term.addCommand("log", (...args) => {
+    const type = args[1]; // The first argument is the log type
+
+    if (args.length > 1) {
+      const message = args[0]
+      organize(message);
+    } else {
+      term.echo("Usage: log message");
+    }
+  });
+ }
+
+  // Add event listeners to log data
+  term.on('data', (data) => {
+    organize(data);
+  });
+
+  term.on('output', (data) => {
+    organize(data, "Termino.js Output:");
+  });
+
+  return {
+    // Provide a method to access the log array
+    getLog: () => logOutput,
+  };
+}
+
+
+term.output("hellos")
+ let bb = logPlugin(term)
+ 
