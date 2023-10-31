@@ -409,11 +409,8 @@ function disableTextToSpeech(){
       
       
     // TERMINAL INPUT STATE / TERMINAL PROMPT FUNCTION  
-    let InputState = false; 
-    
-    let READSTREAM = false;
+    let InputState = false;
 
-      
     function termInput(question, callback) {
       return new Promise(function(resolve) {
 
@@ -432,17 +429,17 @@ function disableTextToSpeech(){
         
         InputState = true;
 
-        
         function handleCommandForQuestion(event, stream = null, data= null) {
 
-          if (event?.keyCode == Command_Key || stream) {
+          if (event.keyCode == Command_Key || stream) {
             if (window?.event?.preventDefault) {
               window.event.preventDefault()
             }
             let value = terminalSelector.querySelector(DEF_SETTINGS.terminal_input).value || terminalSelector.querySelector(DEF_SETTINGS.terminal_input).innerText  || terminalSelector.querySelector(DEF_SETTINGS.terminal_input).textContent || data
             termClearValue()
-  if(!READSTREAM){          terminalSelector.querySelector(DEF_SETTINGS.terminal_input).removeEventListener('keypress', handleCommandForQuestion);
-                 }
+           
+ if(!stream){           terminalSelector.querySelector(DEF_SETTINGS.terminal_input).removeEventListener('keypress', handleCommandForQuestion);
+            }
             InputState = false;
             
             function getCallBack(val){
@@ -469,19 +466,22 @@ function disableTextToSpeech(){
         }
 
         /// Handle inputs for question state.
-  
-  on('t', (data) => {
-  console.log("dude wtfs")
- READSTREAM = true
- 
-    handleCommandForQuestion(null, true, data)
-});     
+ let READSTREAM = false
         
- if(!READSTREAM){       
-        terminalSelector.querySelector(DEF_SETTINGS.terminal_input).addEventListener('keypress', handleCommandForQuestion);
- }
-       
-    
+ on('t', (data) => {
+  
+ READSTREAM = true
+});     
+ 
+        console.log(READSTREAM)////
+ if(!READSTREAM){       terminalSelector.querySelector(DEF_SETTINGS.terminal_input).addEventListener('keypress', handleCommandForQuestion);
+        }
+   if(READSTREAM){
+     console.log("hhmmm")
+     handleCommandForQuestion(null, true, question)
+     READSTREAM = false
+   }  
+        
 
       })
     }
@@ -497,8 +497,6 @@ function disableTextToSpeech(){
     // FUNCTION TO HANDLE TERM ECHOS (REQUIRED TO HANDLE .on(output))
       
       function echoHandler(command, callback, userInput = true){
-        console.log("called mdan")
-        
           terminal_console.innerHTML += `${DEF_SETTINGS.prompt.replace('{{command}}', command)}`
       scrollTerminalToBottom()
       if(callback){
@@ -632,7 +630,7 @@ function disableTextToSpeech(){
       }
     }
 
-let simulatedInput = false;
+
 
     // If the user has pressed COMMAND btn - default btn is enter
     async function checkIfCommand() {
@@ -697,18 +695,9 @@ let simulatedInput = false;
          handleInput(command, true) 
       }
       
-      function userInputSimulate(val){
-        
-        simulatedInput = true
-       
-         if (InputState != true) {
-         echoHandler("weird",null, true)
-           handleInput(val)
-         }
-      
-         if (InputState) {
-           emit('t', val)
-         }
+      function readStream(v){
+         echoHandler(v, null, true)
+        emit("t", v)
       }
       
       /// DEFAULT TERMINO FUNCTIONS FOR DEVELOPER USAGE - These can only be used for a (WEB BASED TERMINAL)
@@ -728,9 +717,9 @@ let simulatedInput = false;
       speak:SpeechToText,
       on:on,
       emit:emit,
+      t:readStream,
       addCommand:addCommand,
-      exec:exec, /// Execute Command 
-      userInputSimulate
+      exec:exec /// Execute Command 
     }} else{
     /// THIS IS THE COMMAND-LINE CONNECTOR FOR TERMINO.JS APP - EXECUTED VIA COMMAND LINE - IE NODE.JS ETC..  
       // ie; WRITE YOUR TERMINO.JS APP IN BROWSER & BE ABLE TO USE THEM IN NODE.JS VIA A TERMINAL TOO!
@@ -861,36 +850,25 @@ async function test(callbackValue){
 
   return logOutput
 }
-
-  term.addCommand('weird', (data) => {
-   term.output("hmm")
+  term.addCommand('h', (data) => {
+    console.log("hh")
   });
 
- const termDelay = ms => new Promise(res => setTimeout(res, ms));
 
-async function emulate(strings){
-  for(let item in strings){
-    console.log(item)//
-   term.userInputSimulate(strings[item],null, true)   
-   await termDelay(2000)
+function dispatchStrings(strings){
+  for (let item in strings){
+    term.t(strings[item], null, true)
   }
 }
 
+
+ let bb = logPlugin(term)
 let btn = document.getElementById("btn");
-btn.addEventListener("click", async (event) => {
-emulate(['cool beans', 'called'])
+btn.addEventListener("click", (event) => {
+dispatchStrings(['hello word', 'wtf'])
 });
 
 
-
- let bb = logPlugin(term)
- let d = await term.input("hellos")
  
- console.log(d)
-
-
-d = await term.input("hello 2")
- 
- console.log(d)//
-
-// does not work
+let d = await term.input("hellos")
+console.log(d)
