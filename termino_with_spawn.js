@@ -367,7 +367,7 @@ function termInput(question, callback) {
     function resolveInput(val){
       InputState = false
       termInputResolve = null;
-      return resolve(val)
+      resolve(val)
     }
     
     function rejectInput(val){
@@ -662,6 +662,7 @@ function rejectTermInput(reason) {
      
       async function userInputSimulate(val){
         //
+       // console.log(val)//
      // console.log(InputState)
           if (InputState === false) {
          echoHandler(val,null, true)
@@ -672,7 +673,7 @@ function rejectTermInput(reason) {
          //
         //console.log(InputState)
         if(InputState){
-         
+     console.log(val)
           fulfillTermInput(val)
           emit("data", val)
            echoHandler(val,null, true)
@@ -785,13 +786,15 @@ function spawn(terminalElement, customSettings = {}, SpawnOutput = null, command
   const inputsArray = []; // Store the output data
   const outputArray = []
   let commandCount = 0; // Count of commands in the array
-
+let inputState = false
   
   // Function to execute a command
   async function input(command) {
     //console.log(command)
    // outputArray.push(command)
+    inputState = true
     const data = await termino.input(command);
+    inputState = false
     return data;
   }//
 
@@ -922,8 +925,9 @@ function spawn(terminalElement, customSettings = {}, SpawnOutput = null, command
      try{
       for (const command of data) {
        // console.log("sent command" + command)
-        console.log(command)
-        await termino.userInputSimulate(command, null, true)// Use the 'input' function to add command outputs to the array
+       // console.log(command)
+        await termino.userInputSimulate(command, null, false)// Use the 'input' function to add command outputs to the array
+   
       }
      }catch(err){
        console.log(err)
@@ -970,7 +974,7 @@ return  ['hello world', 'word', 'fucked up', 'ff', 'coool banss', 'wtf']
 
  let t= await terminal.input("wtf man") 
  
- //console.log(t+ "3rd")
+ console.log(t+ "3rd")
   
 }()
   
