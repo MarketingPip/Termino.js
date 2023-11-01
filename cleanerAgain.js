@@ -824,7 +824,7 @@ async function test(callbackValue){
 });
 
  term.addCommand("called", (event) => {
- let b =  term.output("helloss")
+ let b =  term.output(event)
 
 });
   
@@ -892,8 +892,8 @@ async function emulate(strings){
 ///
 let btn = document.getElementById("btn");
 btn.addEventListener("click", async (event) => {
-emulate([ "test", 'called', 'hmmm', 'how cool is this'])
-});
+emulate([ "test", 'called', 'hmmm', 'how cool is this', 'called argument'])
+});//
 
 
 let dd = await term.input("hello")
