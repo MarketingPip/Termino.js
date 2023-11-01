@@ -676,7 +676,7 @@ function rejectTermInput(reason) {
           fulfillTermInput(val)
           emit("data", val)
            echoHandler(val,null, true)
-          return
+          return val
         }
         
           return
@@ -760,7 +760,7 @@ function rejectTermInput(reason) {
   }
 }
 
-function spawn(terminalElement, customSettings = {}, SpawnOutput = null) {
+function spawn(terminalElement, customSettings = {}, SpawnOutput = null, commands = null) {
   // Initialize Termino with custom settings
   const termino = new Termino(terminalElement, null, customSettings, true);
 
@@ -781,55 +781,80 @@ function spawn(terminalElement, customSettings = {}, SpawnOutput = null) {
       }
     },
   };
+
+  const inputsArray = []; // Store the output data
+  const outputArray = []
+  let commandCount = 0; // Count of commands in the array
+
   
   // Function to execute a command
   async function input(command) {
-     const data = termino.input(command)
-     return data
-  }
+    //console.log(command)
+   // outputArray.push(command)
+    const data = await termino.input(command);
+    return data;
+  }//
 
   // Function to output text to the terminal
   function output(text) {
     termino.output(text);
   }
 
-  function spawnOutput(val){
-    console.log(SpawnOutput.constructor.name)
-    if (typeof SpawnOutput === 'function') {
-      SpawnOutput(val)
-    } else if (SpawnOutput instanceof HTMLElement || SpawnOutput instanceof HTMLBodyElement) {
-      console.log("helllo")
-      // Append output to the specified HTML element
-      if(!SpawnOutput instanceof HTMLBodyElement){
-      SpawnOutput.appendChild(val);
+  function spawnOutput(val) {
+    if (SpawnOutput) {
+      if (typeof SpawnOutput === 'function') {
+        SpawnOutput(val);
+      } else if (SpawnOutput instanceof HTMLElement || SpawnOutput instanceof HTMLBodyElement) {
+        // Append output to the specified HTML element
+        if (!(SpawnOutput instanceof HTMLBodyElement)) {
+          SpawnOutput.appendChild(val);
+        }
+        if (SpawnOutput instanceof HTMLBodyElement) {
+          SpawnOutput.innerHTML += val;
+        }
       }
-       if(SpawnOutput instanceof HTMLBodyElement){
-         SpawnOutput.innerHTML += val
-       }
-      
     }
   }
-  
-  
+
   // Function to clear the terminal
   function clearTerminal() {
     termino.clear();
   }
 
-  // Function to simulate user input for an array of commands or Blob
-  async function simulateUserInput(inputData) {
-    if (Array.isArray(inputData)) {
-      for (const command of inputData) {
-       await termino.userInputSimulate(command, null, true)
+  // Process input data based on type and add to the array
+  async function processInputData(inputData) {
+    if (typeof inputData === 'function') {
+       let result;
+      // Execute the function and add the result to the array
+      try{
+       
+      result = await inputData();
+      //console.log(result)
+      if(!Array.isArray(result)){  
+      inputsArray.push(result);
       }
-    } else if (typeof inputData === 'function') {
-      const userInput = await inputData();
-      await termino.userInputSimulate(userInput, null, true)
+      if(Array.isArray(result)){
+        for(let item in result){
+       inputsArray.push(result[item])
+        }
+      }
+        //
+     
+      }catch(err){
+       customEmitter.emit("signalError", err)
+      }
+      
+    } else if (Array.isArray(inputData)) {
+      // Do nothing for arrays
     } else if (inputData instanceof Blob) {
-      const text = await readBlob(inputData);
-     await termino.userInputSimulate(text, null, true)
+      // Read the Blob and split by lines
+      readBlob(inputData).then((text) => {
+        const lines = text.split('\n');
+        inputsArray.push(...lines);
+      });
     } else {
-      await termino.userInputSimulate(inputData, null, true)
+      // Treat as a string and add to the array
+      inputsArray.push(`${inputData}`);
     }
   }
 
@@ -843,24 +868,77 @@ function spawn(terminalElement, customSettings = {}, SpawnOutput = null) {
       reader.readAsText(blob);
     });
   }
-//
+
+  // Emit the output event when all commands are executed
+  function emitOutput() {
+      spawnOutput(JSON.stringify(outputArray));
+      customEmitter.emit("spawnClosed", output)
+  }
+
+  // Initialize the process when 'commands' are provided
+  async function startProcess(){
+  customEmitter.emit("spawnStarted", null)  
+  if (commands) {
+    if(!commands instanceof String){
+    for (const cmd of commands) {
+     
+      processInputData(cmd);
+    }
+    }
+
+    if(commands.constructor.name === "String"){
+      processInputData(commands);
+    }
+    
+    if(typeof commands === "Function" || commands.constructor.name === "AsyncFunction"){
+      await processInputData(commands);
+    }
+    
+    
+    //
+    
+  
+    await simulateUserInput(inputsArray)
+    emitOutput();
+  }
+  }
   termino.on('output', (data) => {
-    spawnOutput(data)
     // Emit the 'output' event with the data
     customEmitter.emit('output', data);
+    outputArray.push(data)
   });
 
   termino.on('data', (data) => {
-    spawnOutput(data)
     // Emit the 'data' event with the data
     customEmitter.emit('data', data);
+    outputArray.push(data)
   });
+
+  function addCommand(command, handler) {
+   termino.addCommand(command, handler) 
+  }
+  
+   async function simulateUserInput(data) {
+     try{
+      for (const command of data) {
+       // console.log("sent command" + command)
+        console.log(command)
+        await termino.userInputSimulate(command, null, true)// Use the 'input' function to add command outputs to the array
+      }
+     }catch(err){
+       console.log(err)
+       customEmitter.emit("signalError", err)
+     }
+   }
+  
+   
   
   return {
     input,
     output,
     clearTerminal,
-    simulateUserInput,
+    addCommand,
+    startProcess,
     on: customEmitter.on.bind(customEmitter),
   };
 }
@@ -876,17 +954,30 @@ function bbb(t){
 const terminal = spawn(terminalElement, {
   // Custom settings if needed
   allow_scroll: false,
-}, document.body);
-
+}, document.body, bb);
 
 //
+async function bb(){
+return  ['hello world', 'word', 'fucked up', 'ff', 'coool banss', 'wtf']
+}
 
-// Simulate user input
-setTimeout(() => {
-  terminal.simulateUserInput(prompt("hhessllo"));
-}, 2000);
+!async function (){
+ let d = await terminal.input('hello')
+//  console.log(d + "cool bro")
+ let c = await terminal.input('hellso')
+  
+// console.log(c + "new")
 
-!async function(){
- let ddd = await terminal.input("")
- console.log(ddd + " coold man")
+ let t= await terminal.input("wtf man") 
+ 
+ //console.log(t+ "3rd")
+  
 }()
+  
+ terminal.on('spawnClosed', (data) => {
+console.log("Spawn has been closed", data.message)
+  });
+
+terminal.startProcess()
+
+//
