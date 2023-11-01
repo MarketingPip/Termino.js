@@ -760,13 +760,32 @@ function rejectTermInput(reason) {
   }
 }
 
-function spawn(terminalElement, customSettings = {}) {
+function spawn(terminalElement, customSettings = {}, SpawnOutput = null) {
   // Initialize Termino with custom settings
   const termino = new Termino(terminalElement, null, customSettings, true);
 
+  // Create a custom event emitter object
+  const customEmitter = {
+    events: {},
+    on(event, callback) {
+      if (!this.events[event]) {
+        this.events[event] = [];
+      }
+      this.events[event].push(callback);
+    },
+    emit(event, data) {
+      if (this.events[event]) {
+        for (const callback of this.events[event]) {
+          callback(data);
+        }
+      }
+    },
+  };
+  
   // Function to execute a command
   async function input(command) {
-    return termino.input(command)
+     const data = termino.input(command)
+     return data
   }
 
   // Function to output text to the terminal
@@ -774,27 +793,67 @@ function spawn(terminalElement, customSettings = {}) {
     termino.output(text);
   }
 
+  function spawnOutput(val){
+    console.log(SpawnOutput.constructor.name)
+    if (typeof SpawnOutput === 'function') {
+      SpawnOutput(val)
+    } else if (SpawnOutput instanceof HTMLElement || SpawnOutput instanceof HTMLBodyElement) {
+      console.log("helllo")
+      // Append output to the specified HTML element
+      if(!SpawnOutput instanceof HTMLBodyElement){
+      SpawnOutput.appendChild(val);
+      }
+       if(SpawnOutput instanceof HTMLBodyElement){
+         SpawnOutput.innerHTML += val
+       }
+      
+    }
+  }
+  
+  
   // Function to clear the terminal
   function clearTerminal() {
     termino.clear();
   }
 
-  // Function to simulate user input
-  async function simulateUserInput(input) {
-    await termino.userInputSimulate(input, null, true);
+  // Function to simulate user input for an array of commands or Blob
+  async function simulateUserInput(inputData) {
+    if (Array.isArray(inputData)) {
+      for (const command of inputData) {
+       await termino.userInputSimulate(command, null, true)
+      }
+    } else if (typeof inputData === 'function') {
+      const userInput = await inputData();
+      await termino.userInputSimulate(userInput, null, true)
+    } else if (inputData instanceof Blob) {
+      const text = await readBlob(inputData);
+     await termino.userInputSimulate(text, null, true)
+    } else {
+      await termino.userInputSimulate(inputData, null, true)
+    }
   }
 
-    // Event emitter for standard output
-  function on(event, listener) {
-    termino.on(event, listener);
+  async function readBlob(blob) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        resolve(reader.result);
+      };
+      reader.onerror = reject;
+      reader.readAsText(blob);
+    });
   }
- 
-    termino.on('output', (data) => {
-    console.log(`Output: ${data}`)
+//
+  termino.on('output', (data) => {
+    spawnOutput(data)
+    // Emit the 'output' event with the data
+    customEmitter.emit('output', data);
   });
-  
+
   termino.on('data', (data) => {
-    console.log(`Input: ${data}`)
+    spawnOutput(data)
+    // Emit the 'data' event with the data
+    customEmitter.emit('data', data);
   });
   
   return {
@@ -802,28 +861,32 @@ function spawn(terminalElement, customSettings = {}) {
     output,
     clearTerminal,
     simulateUserInput,
-    on
+    on: customEmitter.on.bind(customEmitter),
   };
 }
 
 // Select the terminal element in your HTML
 const terminalElement = document.querySelector("#your-terminal-element");
 
+function bbb(t){
+ console.log(t + "cool")
+}
+
 // Create a terminal instance
 const terminal = spawn(terminalElement, {
   // Custom settings if needed
   allow_scroll: false,
-}, null, true);
+}, document.body);
 
-// Execute a command
-terminal.input("ls").then((result) => {
-  terminal.output(`${result}`);
-});
 
 //
 
 // Simulate user input
 setTimeout(() => {
-  terminal.simulateUserInput("echo Hello, Termino 2!");
+  terminal.simulateUserInput(prompt("hhessllo"));
 }, 2000);
 
+!async function(){
+ let ddd = await terminal.input("")
+ console.log(ddd + " coold man")
+}()
