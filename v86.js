@@ -22,8 +22,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Initialize the v86 emulator
     emulator = new V86Starter({
-        wasm_path: "https://raw.githubusercontent.com/minie4/WebTerm/master/assets/v86.wasm",
-        memory_size:  64 * 1024 * 1024, // 64 MB of memory
+        wasm_path: "https://cdn.jsdelivr.net/gh/minie4/WebTerm/assets/v86.wasm",
+      memory_size: 100 * 1024 * 1024, // 64 MB of memory // 256 MB of memory
+      vga_memory_size: 100 * 1024 * 1024,
         screen_container: document.getElementById("screen"),
         bios: {
             url: "https://raw.githubusercontent.com/minie4/WebTerm/master/images/seabios.bin",
@@ -35,6 +36,10 @@ document.addEventListener("DOMContentLoaded", () => {
             url: "https://raw.githubusercontent.com/minie4/WebTerm/master/images/os.iso",
         },
         autostart: true,
+       filesystem: {},
+        
+        autostart: true,
+ 
     });
 
 
@@ -43,88 +48,71 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Wait for the emulator to get ready
     emulator.add_listener("emulator-ready", () => {
-      console.log("hello")
+        emulator.serial0_send("hello")
     })
   
   
+  // In this example we wait for output from the serial terminal, which
+    // should be running busybox. We log in as soon as a prompt appears and then
+    // retrieve a directory listing of the root directory
+    var data = "";
 
+    var stages = [
+        {
+            test: "~% ",
+            send: "ls -1 --color=never /\n",
+        },
+        {
+            test: "~% ",
+            send: "lua -e 'print(3+4)'\n",
+        },
+    ];
+    var stage = 0;
+
+    emulator.add_listener("serial0-output-byte", function(byte)
+    {
+        var char = String.fromCharCode(byte);
+        if(char === "\r")
+        {
+            return;
+        }
+
+        data += char;
+        document.getElementById("terminal").value += char;
+
+        var current = stages[stage];
+
+        if(!current)
+        {
+            return;
+        }
+
+        if(data.endsWith(current.test))
+        {
+            stage++;
+            emulator.serial0_send(current.send);
+
+            var log = "Sending: " + current.send.replace(/\n/g, "\\n") + "\n";
+            document.getElementById("log").value += log;
+        }
+    });
       // Attach a click event to the "Send Input" button
  
   
 })
- // Function to send custom input to /dev/ttyS0
-      function sendCustomInput(input) {
-        console.log("called")
-        emulator.keyboard_send_text(`input`);
-      }     document.getElementById("sendInput").addEventListener("click", function () {
-        var customInput = document.getElementById("customInput").value;
-        sendCustomInput(customInput);
-      });
-function onConsoleOutput(char) {
-    // Only write to the xterm if the system is fully booted
-    if(booted) {
-        console.log(char);
-    }
-    // If the char is the shell prompt after the login message start
-    // the welcome script and set bootet to true
-    if(char == "#" && previous_line.includes("buildroot login: "+username)) {
-       console.log("g")
-  
-        booted = true;
-    }
-}
 
-var debugcnt = 0;
-var debugword = "+++debug+++"
-function onConsoleInput(key) {
-    // Paste (Strg+Alt+V)
-    if((key.domEvent.key == "v") && key.domEvent.altKey && key.domEvent.ctrlKey) {
-        debug("paste")
-        navigator.clipboard.readText().then((text) => {
-            emulator.serial0_send(text)
-        })
-        return;
-    }
 
-    // Copy (Strg+Alt+C)
-    if((key.domEvent.key == "c") && key.domEvent.altKey && key.domEvent.ctrlKey) {
-        debug("copy")
-        document.execCommand("copy")
-        return;
-    }
 
-    // Send keys from xterm to v86
-    emulator.serial0_send(key.key)
+        
+           <script src="https://cdn.jsdelivr.net/gh/minie4/WebTerm/assets/libv86.js"></script>
+</head>
 
-    // Listen for the debug key combination
-    if(key.key == debugword[debugcnt]) {
-        debugcnt++;
-    } else {
-        debugcnt = 0;
-    }
-    if(debugcnt == debugword.length) {
-        document.getElementById("screen").classList.toggle("visible"); 
-    }
-    debug("debugcnt "+debugcnt)
-}
+<textarea readonly rows=25 cols=60 id="log">Waiting for boot ...
+</textarea>
+//
+<textarea readonly rows=25 cols=60 id="terminal"></textarea>
 
-var previous_line = "";
-function onConsoleLine(line) {
-    // Enter username on the login prompt
-    if (line.startsWith("Welcome to WebTerm")) {
-        emulator.serial0_send(username+"\n")
-    }
-    // Save the line
-    previous_line = line;
-}
-
-function resize() {
-    // Resize the terminal
-    
-    // Send tty resize over /dev/console so that the user can't see it
-    emulator.keyboard_send_text(`stty cols ${term.cols} rows ${term.rows} -F /dev/ttyS0\n`)
-}
-
-function debug(text) {
-    console.debug("DEBUG: "+text)
-}
+<div id="screen">
+    <div style="white-space: pre; font: 14px monospace; line-height: 14px"></div>
+    <canvas style="display: none"></canvas>
+</div>
