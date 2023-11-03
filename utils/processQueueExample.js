@@ -1,6 +1,6 @@
 import { Termino } from 'https://cdn.jsdelivr.net/gh/MarketingPipeline/Termino.js@v1.0.0/dist/termino.min.js';
 
-function createTerminal() {
+function createTerminal(closedCallBack=null) {
  
 
   const queue = [];
@@ -10,8 +10,11 @@ function createTerminal() {
 
   // Custom function to handle the termination of the terminal
   function terminalClosed() {
-    console.log('Terminal Closed');
     // You can perform any additional actions here when the terminal is closed.
+    if(closedCallBack){
+      closedCallBack()
+    }
+    
   }
 
   // Custom function to process the queue
@@ -40,7 +43,7 @@ function createTerminal() {
           
           
        if(item.callback){
-         item.callback(userInput)
+         await item.callback(userInput)
        }
        }
       
@@ -87,17 +90,27 @@ function createTerminal() {
   }
 
   
+  function disable(){
+    term.disable_input()
+  }
+  
   
   return {
     echo,
     input,
     kill,
+    disable,
     processQueue,
     sameLineInput
   };
 }
 
-const terminal = createTerminal();
+function closed(){
+  console.log("Closed callback")
+  terminal.disable()
+}
+//
+const terminal = createTerminal(closed);
 
 
 async function t(a, b, c){
@@ -113,11 +126,9 @@ function bb(b){
 
 
  function d(v) {
-      console.log(v + " cool");
+     console.log(v + " cool");
     }
-// Example usage
-(async () => {
-  terminal.echo('Hello world from https://github.com/MarketingPipeline');
+terminal.echo('Hello world from https://github.com/MarketingPipeline');
  terminal.input('Enter your name:', async function(name) {
     terminal.echo(`Hello, ${name}!`);
     terminal.echo("test");
@@ -125,11 +136,52 @@ function bb(b){
     terminal.input("hello agaom 2", d);
    
    
+   
+   
   // t()//
    //
-    terminal.input("hello agaom", d);
+    terminal.sameLineInput("hello agaom", d);
     // console.log(d)
+   nextInputs()
   });
- 
-})();
+  
+  //
+  
+  function nextInputs(){
+    terminal.input('Enter your name:', async function(name) {
+    terminal.echo(`Hello, ${name}!`);
+    terminal.echo("test");
+   
+    terminal.input("hello agaom 2", d);
+   
+   
+   
+   
+  // t()//
+   //
+    terminal.sameLineInput("hello agaom", d);
+    // console.log(d)
+      nextInputs2()
+  })}
+
+
+
+ function nextInputs2(){
+    terminal.input('Enter your name:', async function(name) {
+    terminal.echo(`Hello, ${name}!`);
+    terminal.echo("test");
+   
+    terminal.input("hello agaom 2", d);
+   
+   
+   
+   
+  // t()//
+   //
+    terminal.sameLineInput("hello agaom", d);
+    // console.log(d)
+     // 
+  })}
+  
+  
 terminal.processQueue();
