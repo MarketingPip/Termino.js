@@ -69,11 +69,16 @@ export function Termino (terminalSelector, keyCodes, settings) {
     
    function emit(eventName, data) {
     const eventListeners = listeners[eventName];
+    let callbackdata = null;
     if (eventListeners) {
        eventListeners.forEach((callback) => {
-        data = callback(data);
+        callbackdata = callback(data);
       });
-    }
+    } 
+   if(callbackdata){
+     return callbackdata
+   } 
+     
     return data
   }
     
@@ -830,16 +835,16 @@ async function test(callbackValue){
   const logOutput = [];
 
   // Function to organize and log data
-  function organize(data, type = null) {
+  async function organize(data, type = null) {
     // Create a timestamp for the log entry
     const timestamp = new Date().toLocaleString();
 
     if (!type) {
       type = "Termino.js Input:";
     }
-
+    data = await data
     // Format the log entry with a timestamp
-    const logEntry = `[${timestamp}] ${type} ${data.trim()}`;
+    const logEntry = `[${timestamp}] ${type} ${data?.trim()}`;
 
     // Append the log entry to the log area
     logOutput.push(logEntry.trim());
@@ -876,18 +881,24 @@ async function test(callbackValue){
   return logOutput
 }
 //
-
-  term.on('modify:term-output', (data) => {
-   return data.replace("hello", "hello world dude")
-  });
+function tests(term){
+  
  
 
-
-
+     //
+  return []
+}
+ term.on('data',  (data) => {
+   //console.log(data)
+  return data.replace("hello", "bye")
+  });
+ 
 let log = logPlugin(term)
+ // Add event listeners to log data
 
 term.on('loggerUpdated', (data) => {
-  console.log(log)
+  //console.log(log)
   // return data.replace("hello", "hello world")
   });
 let data = await term.input("hello")
+console.log(data)
