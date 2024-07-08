@@ -818,12 +818,12 @@ async function test(callbackValue){
 
  
   term.on('loggerUpdated', async (data) => {
- console.log(data)
-    console.log(bb.getLog())
+ console.log(data)  
+   // console.log(bb.getLog())
 });
   
 
-
+//
 
 
 
@@ -833,7 +833,7 @@ async function test(callbackValue){
    function logPlugin(term, addCommand = false) {
   // Initialize the log output array
   const logOutput = [];
-
+ const logOutputJSON = []
   // Function to organize and log data
   async function organize(data, type = null) {
     // Create a timestamp for the log entry
@@ -845,11 +845,11 @@ async function test(callbackValue){
     data = await data
     // Format the log entry with a timestamp
     const logEntry = `[${timestamp}] ${type} ${data?.trim()}`;
-
+    logOutputJSON.push({timestamp, type,data:data?.trim() || null})
     // Append the log entry to the log area
     logOutput.push(logEntry.trim());
 
-    term.emit("loggerUpdated", logOutput.join("\n"))
+    term.emit("loggerUpdated", {raw:logOutput.join("\n"), json:logOutputJSON})
   }
 
   // Add a "log" command to the Termino.js instance
@@ -889,16 +889,18 @@ function tests(term){
   return []
 }
  term.on('data',  (data) => {
-   //console.log(data)
-  return data.replace("hello", "bye")
+   console.log(data)
+ // return data.replace("hello", "bye")
   });
  
 let log = logPlugin(term)
  // Add event listeners to log data
 
-term.on('loggerUpdated', (data) => {
-  //console.log(log)
-  // return data.replace("hello", "hello world")
-  });
+ 
+
+  term.addCommand("boo", (...args) => {
+    console.log("booom")
+  })
+
+term.exec("boo")  
 let data = await term.input("hello")
-console.log(data)
